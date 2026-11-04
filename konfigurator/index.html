@@ -269,6 +269,13 @@ const ETAZA_H = 3.0, MAX_ETAZ = 3;
 function novaSoba(tip, x, z, w, d, ime, e = 0) {
   return { id:nid++, tip, ime:ime || TIPI[tip].ime, x, z, w, d, e, n:{ ...TIPI[tip].def } };
 }
+const GOSTITELJ = { hodnik:['poraba', 'tablica', 'kljuc'], kopalnica:['bojler', 'ventil'], dnevna:['zat', 'vtic', 'ir'] };
+function pocistiSkupne(tip) {        // vrne seznam odstranjenih naprav
+  const odstranjeno = [];
+  if (!GOSTITELJ[tip] || st.sobe.some(r => r.e === 0 && r.tip === tip)) return odstranjeno;
+  for (const k of GOSTITELJ[tip]) if (st.skupno[k]) { odstranjeno.push(`${st.skupno[k]} × ${KAT[k].ime.toLowerCase()}`); st.skupno[k] = 0; }
+  return odstranjeno;
+}
 const steviloEtaz = (s = st) => 1 + Math.max(0, ...s.sobe.map(r => r.e));
 const imeEtaze = e => e === 0 ? 'Pritličje' : `${e}. nadstropje`;
 const etazStr = n => n === 2 ? '2 etaži' : `${n} etaže`;
@@ -572,8 +579,11 @@ function zgradi() {
       tl.rotation.x = -Math.PI / 2; tl.position.set(r.x + r.w / 2, .005, r.z + r.d / 2); tl.receiveShadow = true;
       tl.userData.soba = r.id; fg.add(tl); tlaSob.push(tl);
       if (r.id === izbrana) {
-        const o = new THREE.Mesh(new THREE.PlaneGeometry(r.w - .02, r.d - .02), new THREE.MeshBasicMaterial({ color:0x1E4634, transparent:true, opacity:.14, depthWrite:false }));
+        const o = new THREE.Mesh(new THREE.PlaneGeometry(r.w - .02, r.d - .02), new THREE.MeshBasicMaterial({ color:0x1E4634, transparent:true, opacity:.42, depthWrite:false }));
         o.rotation.x = -Math.PI / 2; o.position.set(r.x + r.w / 2, .012, r.z + r.d / 2); fg.add(o);
+        const rob = [[r.x, r.z, r.x + r.w, r.z + .08], [r.x, r.z + r.d - .08, r.x + r.w, r.z + r.d], [r.x, r.z, r.x + .08, r.z + r.d], [r.x + r.w - .08, r.z, r.x + r.w, r.z + r.d]];
+        const obM = new THREE.MeshBasicMaterial({ color:0xB4612E });
+        for (const [a, b, c, d] of rob) box(fg, a, b, c, d, H + .03, H + .07, obM, false);
       }
       if (r.tip === 'terasa') {
         box(fg, r.x, r.z, r.x + r.w, r.z + r.d, -.07, 0, M.les, false);
@@ -659,6 +669,7 @@ renderer.domElement.addEventListener('pointerup', e => {
 });
 
 // ================= vmesnik =================
+const sporocilo = t => { const el = document.getElementById('sporocilo'); el.textContent = t; clearTimeout(sporocilo.t); sporocilo.t = setTimeout(() => el.textContent = '', 5000); };
 const vs = document.getElementById('vsebina');
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 function prekrivanja() {
@@ -755,8 +766,13 @@ vs.addEventListener('click', e => {
   const t = e.target.closest('button'); if (!t) return;
   if (t.dataset.predloga) { st = izPredloge(t.dataset.predloga); izbrana = null; prviOkvir = true; osvezi(); return; }
   if (t.dataset.brisi) { const r = st.sobe.find(x => x.id === +t.dataset.brisi);
-    if (st.sobe.filter(x => x.e === 0).length > 1 || (r && r.e > 0)) st.sobe = st.sobe.filter(x => x.id !== +t.dataset.brisi);
-    st.sobe.forEach(x => { while (x.e > 0 && !st.sobe.some(y => y.e === x.e - 1)) x.e--; });
+    if (st.sobe.filter(x => x.e === 0).length > 1 || (r && r.e > 0)) {
+      st.sobe = st.sobe.filter(x => x.id !== +t.dataset.brisi);
+      st.sobe.forEach(x => { while (x.e > 0 && !st.sobe.some(y => y.e === x.e - 1)) x.e--; });
+      const ods = r ? pocistiSkupne(r.tip) : [];
+      if (izbrana === r.id) izbrana = null;
+      sporocilo(`Prostor ${r.ime} je odstranjen skupaj z napravami${ods.length ? ', tudi: ' + ods.join(', ') : ''}.`);
+    } else sporocilo('Dom mora imeti vsaj en prostor v pritličju.');
     st.predloga = null; osvezi(); return; }
   if (t.id === 'dodaj-etazo') { dodajNadstropje(); osvezi(); return; }
   if (t.dataset.brisiEtazo) { const e = +t.dataset.brisiEtazo; st.sobe = st.sobe.filter(r => r.e !== e); pogledEtaza = 'vse'; prviOkvir = true; st.predloga = null; osvezi(); return; }
@@ -776,14 +792,14 @@ vs.addEventListener('change', e => {
   const r = st.sobe.find(x => x.id === +s.dataset.soba), p = el.dataset.polje;
   if (p === 'ime') r.ime = el.value.slice(0, 40) || TIPI[r.tip].ime;
   else if (p === 'e') { r.e = Math.max(0, Math.min(MAX_ETAZ - 1, +el.value | 0)); }
-  else if (p === 'tip') { const staro = TIPI[r.tip].ime; r.tip = el.value; r.n = { ...TIPI[r.tip].def }; if (r.ime.startsWith(staro) || r.ime === 'Nov prostor') r.ime = TIPI[r.tip].ime; }
+  else if (p === 'tip') { const staro = TIPI[r.tip].ime, stariTip = r.tip; r.tip = el.value; r.n = { ...TIPI[r.tip].def }; if (r.ime.startsWith(staro) || r.ime === 'Nov prostor') r.ime = TIPI[r.tip].ime;
+    const ods = pocistiSkupne(stariTip); if (ods.length) sporocilo(`Odstranjeno, ker ni več prostora vrste ${staro.toLowerCase()}: ${ods.join(', ')}.`); }
   else { let v = parseFloat(String(el.value).replace(',', '.')); if (!isFinite(v)) return;
     v = Math.round(v * 100) / 100; if (p === 'w' || p === 'd') v = Math.max(1, Math.min(40, v)); else v = Math.max(-50, Math.min(50, v)); r[p] = v; }
   st.predloga = null; izbrana = r.id; osvezi();
 });
 vs.addEventListener('focusin', e => { const s = e.target.closest('[data-soba]'); if (s && +s.dataset.soba !== izbrana) { izbrana = +s.dataset.soba; zgradi(); } });
 
-const sporocilo = t => { const el = document.getElementById('sporocilo'); el.textContent = t; clearTimeout(sporocilo.t); sporocilo.t = setTimeout(() => el.textContent = '', 5000); };
 document.getElementById('g-povezava').addEventListener('click', async () => {
   const url = location.href;
   try { await navigator.clipboard.writeText(url); sporocilo('Povezava je kopirana. Z njo kadar koli odprete to izbiro.'); }

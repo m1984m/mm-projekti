@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Konfigurator pametnega doma | MM projekti</title>
+<meta name="description" content="Sestavite pametni dom za svoje stanovanje ali hišo: izberite tloris, naprave po prostorih in takoj vidite ceno z DDV.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pine:#1E4634; --pine-2:#2C5A45; --ink:#1C2420; --soft:#5F6B64; --rule:#DCE3DE; --tint:#EEF3EF;
+    --clay:#B4612E; --paper:#FFFFFF; --bg:#F3F5F3;
+    --sans:'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+    --serif:'Source Serif 4', Georgia, serif;
+  }
+  * { box-sizing:border-box; }
+  html, body { margin:0; height:100%; }
+  body { font:15px/1.45 var(--sans); color:var(--ink); background:var(--bg); }
+  button, input, select { font:inherit; color:inherit; }
+  button { cursor:pointer; }
+  :focus-visible { outline:2px solid var(--clay); outline-offset:2px; }
+
+  .app { display:grid; grid-template-columns:1fr 400px; height:100vh; }
+  #pogled { position:relative; min-width:0; }
+  #pogled canvas { display:block; width:100%; height:100%; }
+  .namig { position:absolute; left:16px; bottom:14px; font-size:13px; color:var(--soft); background:rgba(255,255,255,.8); padding:4px 10px; border-radius:6px; }
+  .znak { position:absolute; left:16px; top:14px; display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--pine); font-weight:600; background:rgba(255,255,255,.85); padding:6px 12px 6px 6px; border-radius:10px; }
+  .znak svg { width:30px; height:30px; }
+  .etaze { position:absolute; top:14px; left:50%; transform:translateX(-50%); display:flex; gap:4px; background:rgba(255,255,255,.92); padding:4px; border-radius:10px; box-shadow:0 1px 3px rgba(20,32,26,.08); }
+  .etaze[hidden] { display:none; }
+  .etaze button { border:0; background:none; padding:6px 12px; border-radius:7px; color:var(--soft); font-weight:500; font-size:13.5px; white-space:nowrap; }
+  .etaze button[aria-pressed="true"] { background:var(--pine); color:#fff; }
+
+  .panel { background:var(--paper); border-left:1px solid var(--rule); display:flex; flex-direction:column; min-height:0; }
+  .panel header { padding:18px 20px 0; }
+  .panel h1 { font-size:21px; line-height:1.15; margin:0 0 4px; color:var(--pine); font-weight:600; letter-spacing:-.01em; }
+  .panel header p { margin:0 0 14px; color:var(--soft); font-size:13.5px; }
+  nav.zavihki { display:grid; grid-template-columns:repeat(3,1fr); border-bottom:1px solid var(--rule); padding:0 12px; }
+  nav.zavihki button { border:0; background:none; padding:10px 4px 11px; color:var(--soft); font-weight:500; border-bottom:2px solid transparent; margin-bottom:-1px; }
+  nav.zavihki button[aria-selected="true"] { color:var(--pine); border-bottom-color:var(--pine); font-weight:600; }
+  .vsebina { flex:1; overflow:auto; padding:16px 20px 24px; }
+  .vsebina h2 { font-size:15px; margin:18px 0 8px; color:var(--pine); font-weight:600; }
+  .vsebina h2:first-child { margin-top:0; }
+  .opis { color:var(--soft); font-size:13.5px; margin:0 0 10px; }
+
+  .predloge { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .predloge button { text-align:left; border:1px solid var(--rule); background:var(--paper); border-radius:10px; padding:10px 12px; }
+  .predloge button b { display:block; font-weight:600; }
+  .predloge button span { font-size:12.5px; color:var(--soft); }
+  .predloge button[aria-pressed="true"] { border-color:var(--pine); background:var(--tint); }
+
+  .soba { border-top:1px solid var(--rule); padding:10px 0; }
+  .soba.izbrana { background:linear-gradient(90deg, var(--tint), transparent); margin:0 -20px; padding:10px 20px; }
+  .soba .vrsta1 { display:grid; grid-template-columns:1fr 128px 30px; gap:8px; align-items:center; }
+  .soba input[type=text], .soba select, .mere input { border:1px solid var(--rule); border-radius:7px; padding:6px 8px; background:#fff; width:100%; }
+  .mere { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:7px; }
+  .mere label { font-size:11.5px; color:var(--soft); }
+  .mere input { padding:4px 6px; }
+  .brisi { border:0; background:none; color:var(--soft); font-size:18px; line-height:1; padding:4px; border-radius:6px; }
+  .brisi:hover { color:var(--clay); background:#F7EDE6; }
+  .etazni { display:grid; gap:6px; }
+  .etazna { display:flex; justify-content:space-between; align-items:center; border:1px solid var(--rule); border-radius:9px; padding:8px 12px; font-size:13.5px; color:var(--soft); }
+  .etazna b { color:var(--ink); font-weight:600; margin-right:6px; }
+  .brisi-etazo { border:0; background:none; color:var(--clay); font-weight:500; font-size:13px; padding:2px 4px; }
+  .etaza-naslov { font-size:13px; color:var(--soft); font-weight:600; margin:14px 0 2px; }
+  .etaza-izbira { display:flex; align-items:center; gap:8px; margin-top:7px; font-size:12px; color:var(--soft); }
+  .etaza-izbira select { border:1px solid var(--rule); border-radius:7px; padding:4px 6px; background:#fff; }
+  .dodaj { margin-top:8px; width:100%; border:1px dashed var(--pine-2); color:var(--pine); background:none; border-radius:8px; padding:9px; font-weight:500; }
+  .povrsina { font-size:12.5px; color:var(--soft); margin-top:10px; }
+  .opozorilo { color:var(--clay); font-size:12.5px; margin-top:4px; }
+
+  .skupina { border-top:1px solid var(--rule); padding:10px 0 4px; }
+  .skupina h3 { font-size:14px; margin:0 0 6px; font-weight:600; display:flex; justify-content:space-between; }
+  .skupina h3 span { font-weight:400; color:var(--soft); font-size:12.5px; }
+  .naprava { display:grid; grid-template-columns:24px 1fr auto; gap:8px; align-items:center; padding:4px 0; }
+  .naprava svg { width:20px; height:20px; }
+  .naprava .ime { font-size:13.5px; }
+  .naprava .ime small { display:block; color:var(--soft); font-size:11.5px; }
+  .stevec { display:flex; align-items:center; border:1px solid var(--rule); border-radius:8px; overflow:hidden; }
+  .stevec button { border:0; background:#fff; width:30px; height:28px; color:var(--pine); font-size:17px; }
+  .stevec button:hover { background:var(--tint); }
+  .stevec output { min-width:26px; text-align:center; font-variant-numeric:tabular-nums; font-weight:600; }
+
+  table.cene { width:100%; border-collapse:collapse; font-size:13.5px; }
+  table.cene td { padding:5px 0; border-bottom:1px solid var(--rule); vertical-align:top; }
+  table.cene td.n { text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; padding-left:8px; }
+  table.cene tr.vsota td { font-weight:600; color:var(--pine); border-bottom:none; padding-top:8px; }
+  table.cene small { color:var(--soft); }
+
+  .noga { border-top:1px solid var(--rule); padding:14px 20px 16px; background:var(--paper); }
+  .noga .zneski { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; }
+  .noga .zneski b { font-size:26px; color:var(--pine); font-weight:600; letter-spacing:-.01em; font-variant-numeric:tabular-nums; }
+  .noga .zneski span { color:var(--soft); font-size:13px; text-align:right; }
+  .gumbi { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .gumbi button { border-radius:9px; padding:10px; font-weight:600; border:1px solid var(--pine); }
+  .gumbi .glavni { background:var(--pine); color:#fff; }
+  .gumbi .drugi { background:#fff; color:var(--pine); }
+  .sporocilo { font-size:12.5px; color:var(--pine-2); min-height:18px; margin-top:6px; }
+
+  @media (max-width: 860px) {
+    .etaze { top:auto; bottom:10px; }
+    .app { grid-template-columns:1fr; grid-template-rows:46vh 1fr; height:100dvh; }
+    .panel { border-left:0; border-top:1px solid var(--rule); }
+    .panel header p { display:none; }
+    .namig { display:none; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto !important; } }
+
+  /* ---------- ponudba za tisk ---------- */
+  #ponudba { display:none; }
+  @media print {
+    @page { size:A4; margin:14mm 15mm 15mm; }
+    html, body { height:auto; background:#fff; }
+    .app { display:none !important; }
+    #ponudba { display:block; font:9.6pt/1.5 var(--serif); color:var(--ink); }
+    #ponudba * { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  }
+  #ponudba .gl { display:flex; justify-content:space-between; align-items:center; font-family:var(--sans); font-size:8.5pt; color:var(--soft); border-bottom:1px solid var(--rule); padding-bottom:3mm; }
+  #ponudba .gl .zn { display:flex; gap:2.4mm; align-items:center; color:var(--pine); font-weight:600; font-size:11pt; }
+  #ponudba .gl svg { width:8mm; height:8mm; }
+  #ponudba h1 { font-family:var(--sans); font-size:24pt; color:var(--pine); margin:7mm 0 1mm; font-weight:600; letter-spacing:-.02em; line-height:1.05; }
+  #ponudba .podnaslov { color:var(--soft); margin:0 0 5mm; }
+  #ponudba .meta { display:grid; grid-template-columns:repeat(4,1fr); gap:4mm; font-family:var(--sans); font-size:8.3pt; margin-bottom:5mm; }
+  #ponudba .meta span { display:block; color:var(--soft); }
+  #ponudba .meta b { font-weight:600; font-size:9.5pt; }
+  #ponudba .meta .crta { border-bottom:1px solid var(--ink); height:5mm; }
+  #ponudba img.slika { display:block; max-width:100%; max-height:92mm; margin:0 auto; }
+  #ponudba h2 { font-family:var(--sans); font-size:12.5pt; color:var(--pine); margin:5mm 0 2mm; font-weight:600; page-break-after:avoid; break-after:avoid; }
+  #ponudba table { width:100%; border-collapse:collapse; font-family:var(--sans); font-size:8.8pt; page-break-inside:auto; }
+  #ponudba th { text-align:left; font-weight:600; color:var(--pine); border-bottom:1.4px solid var(--pine); padding:1.3mm 0; }
+  #ponudba td { padding:.8mm 0; border-bottom:1px solid var(--rule); }
+  #ponudba td.n, #ponudba th.n { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; padding-left:3mm; }
+  #ponudba tr.vs td { font-weight:600; color:var(--pine); border-bottom:none; }
+  #ponudba tr { page-break-inside:avoid; }
+  #ponudba .skupaj { margin-top:4mm; display:grid; grid-template-columns:1fr auto; align-items:end; background:var(--pine); color:#fff; border-radius:2mm; padding:4.5mm 6mm; font-family:var(--sans); page-break-inside:avoid; }
+  #ponudba .skupaj .v { font-size:8.8pt; line-height:1.75; opacity:.9; }
+  #ponudba .skupaj .v span { display:inline-block; min-width:50mm; }
+  #ponudba .skupaj b { font-size:21pt; font-weight:600; }
+  #ponudba .skupaj small { display:block; text-align:right; font-size:8pt; opacity:.8; }
+  #ponudba ul { padding-left:4.5mm; margin:2mm 0; }
+  #ponudba li { margin-bottom:.5mm; }
+  #ponudba .pod { display:grid; grid-template-columns:1fr 1fr; gap:14mm; margin-top:8mm; font-family:var(--sans); font-size:8.5pt; color:var(--soft); page-break-inside:avoid; }
+  #ponudba .pod div { border-top:1px solid var(--ink); padding-top:2mm; }
+  #ponudba .pod b { display:block; color:var(--ink); }
+  #ponudba .prelom { page-break-before:always; }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://unpkg.com/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://unpkg.com/three@0.170.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div class="app">
+  <main id="pogled" aria-label="3D prikaz doma">
+    <a class="znak" href="../" aria-label="MM projekti, domov">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="13" fill="#1E4634"/><path d="M15 47V19l17 16 17-16v28" fill="none" stroke="#fff" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="32" cy="35" r="3" fill="#C2703B"/></svg>
+      MM projekti
+    </a>
+    <div class="etaze" id="etaze" role="group" aria-label="Prikaz etaž" hidden></div>
+    <div class="namig">Povlecite za vrtenje, kolešček za povečavo, klik na prostor ga izbere.</div>
+  </main>
+
+  <aside class="panel">
+    <header>
+      <h1>Konfigurator pametnega doma</h1>
+      <p>Izberite tloris, prilagodite prostore in naprave. Cena se preračuna sproti.</p>
+    </header>
+    <nav class="zavihki" role="tablist">
+      <button role="tab" data-zavihek="tloris" aria-selected="true">1. Tloris</button>
+      <button role="tab" data-zavihek="naprave" aria-selected="false">2. Naprave</button>
+      <button role="tab" data-zavihek="cena" aria-selected="false">3. Cena</button>
+    </nav>
+    <div class="vsebina" id="vsebina"></div>
+    <div class="noga">
+      <div class="zneski"><b id="z-ddv">0 €</b><span id="z-brez">brez DDV</span></div>
+      <div class="gumbi">
+        <button class="drugi" id="g-povezava">Shrani povezavo</button>
+        <button class="glavni" id="g-pdf">Ponudba v PDF</button>
+      </div>
+      <div class="sporocilo" id="sporocilo" role="status" aria-live="polite"></div>
+    </div>
+  </aside>
+</div>
+<section id="ponudba" aria-hidden="true"></section>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+// ================= cenik (usklajen s ponudbo 2026-PD-01) =================
+const URNA = 45, DDV = 0.22, ELEKTRO_MODUL = 26.67, MATERIAL = 0.034, NABAVA = 0.15, ENOTA = 187;
+const KAT = {
+  th:     { ime:'Temperatura in vlaga',    opis:'senzor Zigbee',           cena:8.4,   ure:.1 },
+  trv:    { ime:'Radiatorski ventil',       opis:'Sonoff TRVZB',            cena:31.5,  ure:.25 },
+  okno:   { ime:'Okenski kontakt',          opis:'radiator se ob zračenju ugasne', cena:10.5, ure:.1 },
+  pusc:   { ime:'Senzor puščanja vode',     opis:'obvestilo in zapora vode', cena:12.6, ure:.1 },
+  gib:    { ime:'Senzor gibanja',           opis:'luči in varovanje',       cena:12.6,  ure:.15 },
+  luc:    { ime:'Krmiljena luč',            opis:'Shelly 1 Mini Gen4 v dozi', cena:16.8, ure:0, modul:1 },
+  zat:    { ime:'Zatemnilnik',              opis:'Shelly Dimmer Gen4',      cena:31.5,  ure:0, modul:1 },
+  bojler: { ime:'Bojler po urniku',         opis:'Shelly 1PM Gen4 16 A',    cena:23.1,  ure:0, modul:1 },
+  poraba: { ime:'Merjenje porabe doma',     opis:'Shelly Pro 3EM',          cena:126,   ure:0, modul:1 },
+  ventil: { ime:'Zaporni ventil za vodo',   opis:'motorni, ob puščanju zapre', cena:57.75, ure:.4 },
+  kljuc:  { ime:'Pametna ključavnica',      opis:'s tipkovnico',            cena:210,   ure:1.2 },
+  kamera: { ime:'Zunanja kamera',           opis:'posnetki ostanejo doma',  cena:94.5,  ure:1 },
+  tablica:{ ime:'Stenska tablica',          opis:'10", s tlorisom doma',    cena:210,   ure:.6 },
+  vtic:   { ime:'Vtičnica z merjenjem',     opis:'za TV, pralni stroj …',   cena:15.75, ure:.05 },
+  ir:     { ime:'IR oddajnik za klimo',     opis:'upravljanje klime',       cena:21,    ure:.05 },
+};
+const SOBNE = ['trv', 'th', 'okno', 'pusc', 'gib', 'luc'];
+const SKUPNE = ['poraba', 'bojler', 'zat', 'ventil', 'kljuc', 'kamera', 'tablica', 'vtic', 'ir'];
+
+const TIPI = {
+  dnevna:   { ime:'Dnevna soba', tla:'parket',           def:{ trv:1, th:1, okno:2, pusc:0, gib:0, luc:2 } },
+  kuhinja:  { ime:'Kuhinja',     tla:'ploscice_kuhinja', def:{ trv:1, th:1, okno:1, pusc:1, gib:1, luc:2 } },
+  spalnica: { ime:'Spalnica',    tla:'parket',           def:{ trv:1, th:1, okno:1, pusc:0, gib:0, luc:1 } },
+  kopalnica:{ ime:'Kopalnica',   tla:'ploscice',         def:{ trv:1, th:1, okno:1, pusc:2, gib:0, luc:1 } },
+  hodnik:   { ime:'Hodnik',      tla:'parket',           def:{ trv:1, th:1, okno:0, pusc:0, gib:1, luc:2 } },
+  pisarna:  { ime:'Pisarna',     tla:'parket',           def:{ trv:1, th:1, okno:1, pusc:0, gib:0, luc:1 } },
+  wc:       { ime:'WC',          tla:'ploscice',         def:{ trv:0, th:0, okno:0, pusc:1, gib:1, luc:1 } },
+  shramba:  { ime:'Shramba',     tla:'ploscice_kuhinja', def:{ trv:0, th:0, okno:0, pusc:0, gib:1, luc:1 } },
+  stopnisce:{ ime:'Stopnišče',   tla:'parket',           def:{ trv:0, th:0, okno:0, pusc:0, gib:1, luc:1 } },
+  terasa:   { ime:'Terasa',      tla:'terasa',           def:{ trv:0, th:0, okno:0, pusc:0, gib:0, luc:0 } },
+};
+
+const PREDLOGE = {
+  garsonjera: { ime:'Garsonjera', sobe:[
+    ['dnevna',0,0,5,4.5],['kuhinja',5,0,2.6,4.5],['hodnik',0,4.5,5,2],['kopalnica',5,4.5,2.6,2]],
+    skupno:{ poraba:0, bojler:1, zat:0, ventil:0, kljuc:1, kamera:0, tablica:0, vtic:1, ir:1 } },
+  dvosobno: { ime:'Dvosobno', sobe:[
+    ['kuhinja',0,0,3,4],['dnevna',3,0,5,4],['spalnica',8,0,4,4],['kopalnica',0,4,3,2.4],['hodnik',3,4,9,2.4],['terasa',12,0,1.8,4]],
+    skupno:{ poraba:1, bojler:1, zat:1, ventil:1, kljuc:1, kamera:0, tablica:1, vtic:1, ir:1 } },
+  trisobno: { ime:'Trisobno', sobe:[
+    ['kuhinja',0,0,3.1,4.85],['dnevna',3.1,0,6.2,4.85],['spalnica',9.3,0,5.05,4.85],
+    ['kopalnica',0,4.85,3.1,3.5],['hodnik',3.1,4.85,6.2,3.5],['spalnica',9.3,4.85,5.05,3.5],['terasa',14.35,0,2.3,4.5]],
+    skupno:{ poraba:1, bojler:1, zat:1, ventil:2, kljuc:1, kamera:1, tablica:1, vtic:1, ir:1 } },
+  hisa: { ime:'Hiša', sobe:[
+    ['kuhinja',0,0,4,5],['dnevna',4,0,7,5],['spalnica',11,0,4.5,5],
+    ['kopalnica',0,5,3,3.5],['hodnik',3,5,5,3.5],['pisarna',8,5,3.5,3.5],['wc',11.5,5,1.5,3.5],['shramba',13,5,2.5,3.5],
+    ['spalnica',0,8.5,5,3.5],['spalnica',5,8.5,5,3.5],['kopalnica',10,8.5,5.5,3.5],['terasa',15.5,0,3,5]],
+    skupno:{ poraba:1, bojler:1, zat:2, ventil:2, kljuc:1, kamera:2, tablica:1, vtic:2, ir:2 } },
+};
+
+// ================= stanje =================
+let st, izbrana = null, zavihek = 'tloris', nid = 1, pogledEtaza = 'vse';
+const ETAZA_H = 3.0, MAX_ETAZ = 3;
+function novaSoba(tip, x, z, w, d, ime, e = 0) {
+  return { id:nid++, tip, ime:ime || TIPI[tip].ime, x, z, w, d, e, n:{ ...TIPI[tip].def } };
+}
+const steviloEtaz = (s = st) => 1 + Math.max(0, ...s.sobe.map(r => r.e));
+const imeEtaze = e => e === 0 ? 'Pritličje' : `${e}. nadstropje`;
+const etazStr = n => n === 2 ? '2 etaži' : `${n} etaže`;
+function dodajNadstropje() {
+  const e = steviloEtaz();
+  if (e >= MAX_ETAZ) return;
+  const spod = st.sobe.filter(r => r.e === e - 1 && r.tip !== 'terasa');
+  const X0 = Math.min(...spod.map(r => r.x)), Z0 = Math.min(...spod.map(r => r.z));
+  const W = Math.max(...spod.map(r => r.x + r.w)) - X0, D = Math.max(...spod.map(r => r.z + r.d)) - Z0;
+  const r1 = Math.round(D * .55 * 10) / 10, r2 = Math.round((D - r1) * 10) / 10, w3 = Math.round(W / 3 * 10) / 10;
+  let sp = st.sobe.filter(r => r.tip === 'spalnica').length;
+  const nove = [
+    novaSoba('spalnica', X0, Z0, w3, r1, `Spalnica ${++sp}`, e),
+    novaSoba('spalnica', X0 + w3, Z0, w3, r1, `Spalnica ${++sp}`, e),
+    novaSoba('spalnica', X0 + 2 * w3, Z0, Math.round((W - 2 * w3) * 10) / 10, r1, `Spalnica ${++sp}`, e),
+    novaSoba('kopalnica', X0, Z0 + r1, Math.round(W * .3 * 10) / 10, r2, `Kopalnica (${imeEtaze(e)})`, e),
+    novaSoba('hodnik', X0 + Math.round(W * .3 * 10) / 10, Z0 + r1, Math.round(W * .4 * 10) / 10, r2, `Hodnik (${imeEtaze(e)})`, e),
+    novaSoba('stopnisce', X0 + Math.round(W * .7 * 10) / 10, Z0 + r1, Math.round(W * .3 * 10) / 10, r2, 'Stopnišče', e),
+  ];
+  st.sobe.push(...nove); st.predloga = null; pogledEtaza = e; prviOkvir = true; izbrana = null;
+}
+function izPredloge(k) {
+  const p = PREDLOGE[k]; nid = 1;
+  const stevec = {};
+  const sobe = p.sobe.map(([t, x, z, w, d]) => {
+    stevec[t] = (stevec[t] || 0) + 1;
+    const vseh = p.sobe.filter(s => s[0] === t).length;
+    return novaSoba(t, x, z, w, d, vseh > 1 ? `${TIPI[t].ime} ${stevec[t]}` : undefined);
+  });
+  return { predloga:k, sobe, skupno:{ ...p.skupno } };
+}
+
+// zapis v povezavo: kompaktno, base64url
+function zakodiraj(s) {
+  const o = { p:s.predloga, s:s.sobe.map(r => [r.tip, r.ime, r.x, r.z, r.w, r.d, SOBNE.map(k => r.n[k]), r.e]), g:SKUPNE.map(k => s.skupno[k]) };
+  const b = new TextEncoder().encode(JSON.stringify(o));
+  return btoa(String.fromCharCode(...b)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function odkodiraj(h) {
+  try {
+    const b = atob(h.replace(/-/g, '+').replace(/_/g, '/'));
+    const o = JSON.parse(new TextDecoder().decode(Uint8Array.from(b, c => c.charCodeAt(0))));
+    nid = 1;
+    const sobe = o.s.filter(r => TIPI[r[0]]).map(r => {
+      const num = (v, a, b, d) => { v = +v; return isFinite(v) ? Math.max(a, Math.min(b, v)) : d; };
+      const s = novaSoba(r[0], num(r[2], -50, 50, 0), num(r[3], -50, 50, 0), num(r[4], 1, 40, 3), num(r[5], 1, 40, 3), String(r[1]).slice(0, 40), Math.max(0, Math.min(MAX_ETAZ - 1, r[7] | 0)));
+      SOBNE.forEach((k, i) => s.n[k] = Math.max(0, Math.min(20, r[6][i] | 0))); return s;
+    });
+    const skupno = {}; SKUPNE.forEach((k, i) => skupno[k] = Math.max(0, Math.min(10, o.g[i] | 0)));
+    return sobe.length ? { predloga:PREDLOGE[o.p] ? o.p : null, sobe, skupno } : null;
+  } catch { return null; }
+}
+st = (location.hash.length > 1 && odkodiraj(location.hash.slice(1))) || izPredloge('trisobno');
+
+// ================= izračun =================
+function izracun(s) {
+  const kol = {}; Object.keys(KAT).forEach(k => kol[k] = 0);
+  for (const r of s.sobe) SOBNE.forEach(k => kol[k] += r.n[k]);
+  SKUPNE.forEach(k => kol[k] += s.skupno[k]);
+  let oprema = ENOTA, montaza = 0, naprav = 0, moduli = 0;
+  for (const [k, v] of Object.entries(KAT)) {
+    oprema += kol[k] * v.cena; montaza += kol[k] * v.ure; naprav += kol[k]; if (v.modul) moduli += kol[k];
+  }
+  const ogrevani = s.sobe.filter(r => r.n.trv > 0).length;
+  const avto = 0.5 * ogrevani + (kol.pusc && kol.ventil ? 1 : 0) + (kol.kljuc ? 1 : 0) + (kol.kamera ? 0.5 : 0) + 0.5;
+  const plosca = 2 + 0.5 * s.sobe.length + (kol.tablica ? 0.5 : 0);
+  const ure = Math.round((12 + montaza + 0.095 * naprav + avto + plosca + 1.5 * (steviloEtaz(s) - 1)) * 2) / 2;
+  const opremaR = Math.round(oprema), material = Math.round(oprema * MATERIAL);
+  const nabava = Math.round((oprema + material) * NABAVA);
+  const delo = Math.round(ure * URNA), elektro = Math.round(moduli * ELEKTRO_MODUL);
+  const opremaSk = opremaR + material + nabava;
+  const brez = opremaSk + delo + elektro;
+  const ddv = Math.round(brez * DDV * 100) / 100;
+  return { kol, opremaR, material, nabava, opremaSk, ure, delo, moduli, elektro, brez, ddv, z:brez + ddv,
+    povrsina: s.sobe.filter(r => r.tip !== 'terasa').reduce((a, r) => a + r.w * r.d, 0) };
+}
+const f0 = n => new Intl.NumberFormat('sl-SI', { maximumFractionDigits:0, useGrouping:'always' }).format(n) + ' €';
+const f2 = n => new Intl.NumberFormat('sl-SI', { minimumFractionDigits:2, maximumFractionDigits:2, useGrouping:'always' }).format(n) + ' €';
+const prostorov = n => n + ' ' + (n % 100 === 1 ? 'prostor' : n % 100 === 2 ? 'prostora' : (n % 100 === 3 || n % 100 === 4) ? 'prostori' : 'prostorov');
+const m2 = n => new Intl.NumberFormat('sl-SI', { maximumFractionDigits:1 }).format(n);
+
+// ================= simboli =================
+const C = '#B4612E';
+const SIM = {
+  luc:`<circle r="2.7" fill="#fff" stroke="${C}" stroke-width=".8"/><path d="M-1.9-1.9L1.9 1.9M1.9-1.9L-1.9 1.9" stroke="${C}" stroke-width=".8"/>`,
+  zat:`<circle r="2.7" fill="#fff" stroke="${C}" stroke-width=".8"/><path d="M0-2.7A2.7 2.7 0 0 1 0 2.7Z" fill="${C}"/>`,
+  th:`<circle r="2.6" fill="#fff" stroke="${C}" stroke-width=".8"/><circle r=".95" fill="${C}"/>`,
+  trv:`<rect x="-3.2" y="-1.7" width="6.4" height="3.4" rx=".5" fill="${C}"/><path d="M-1.3-1.7v3.4M.3-1.7v3.4M1.9-1.7v3.4" stroke="#fff" stroke-width=".55"/>`,
+  okno:`<rect x="-3.4" y="-.9" width="6.8" height="1.8" fill="${C}"/>`,
+  pusc:`<path d="M0-3.2C1.4-1.2 2.4 0 2.4 1.1a2.4 2.4 0 0 1-4.8 0C-2.4 0-1.4-1.2 0-3.2z" fill="${C}"/>`,
+  ventil:`<path d="M-3.2-1.6L3.2 2.4V-1.6L-3.2 2.4Z" fill="${C}"/><path d="M0 .4V-3M-1.3-3h2.6" stroke="${C}" stroke-width=".7"/>`,
+  gib:`<circle cx="-2" cy="0" r=".9" fill="${C}"/><path d="M-.4-2a2.8 2.8 0 0 1 0 4M1.2-3.2a4.4 4.4 0 0 1 0 6.4" fill="none" stroke="${C}" stroke-width=".75" stroke-linecap="round"/>`,
+  kljuc:`<rect x="-2.8" y="-3" width="5.6" height="6" rx="1" fill="${C}"/><circle cy="-.6" r=".9" fill="#fff"/><path d="M-.45-.3h.9l.35 2h-1.6z" fill="#fff"/>`,
+  kamera:`<rect x="-3.4" y="-1.6" width="4.4" height="3.2" rx=".5" fill="${C}"/><path d="M1 -.9L3.4-2.1V2.1L1 .9z" fill="${C}"/>`,
+  tablica:`<rect x="-3.3" y="-2.3" width="6.6" height="4.6" rx=".7" fill="#fff" stroke="${C}" stroke-width=".8"/><rect x="-2.2" y="-1.2" width="4.4" height="2.4" fill="${C}" opacity=".35"/>`,
+  poraba:`<rect x="-3.2" y="-2.2" width="6.4" height="4.4" fill="#fff" stroke="${C}" stroke-width=".8"/><path d="M-3.2 2.2L3.2-2.2V2.2Z" fill="${C}"/>`,
+  bojler:`<rect x="-2" y="-3.2" width="4" height="6.4" rx="2" fill="#fff" stroke="${C}" stroke-width=".8"/><path d="M-.9 1.4h1.8M0-1.6v3" stroke="${C}" stroke-width=".7"/>`,
+  vtic:`<circle r="2.7" fill="#fff" stroke="${C}" stroke-width=".8"/><circle cx="-1" r=".55" fill="${C}"/><circle cx="1" r=".55" fill="${C}"/>`,
+  ir:`<rect x="-3" y="-1.8" width="6" height="3.6" rx="1.8" fill="#fff" stroke="${C}" stroke-width=".8"/><circle r=".9" fill="${C}"/>`,
+  enota:`<rect x="-3" y="-3" width="6" height="6" rx="1.4" fill="#1E4634"/><circle r="1.1" fill="#C2703B"/>`,
+};
+const ikona = k => `<svg viewBox="-4 -4 8 8" aria-hidden="true">${SIM[k]}</svg>`;
+
+// ================= 3D =================
+const pogled = document.getElementById('pogled');
+const renderer = new THREE.WebGLRenderer({ antialias:true, preserveDrawingBuffer:true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+pogled.prepend(renderer.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0xF3F5F3);
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), .04).texture;
+scene.environmentIntensity = .5;
+const overlay = new THREE.Scene();
+const cam = new THREE.PerspectiveCamera(30, 1, .5, 400);
+const ctl = new OrbitControls(cam, renderer.domElement);
+ctl.enableDamping = true; ctl.maxPolarAngle = Math.PI * .45; ctl.minDistance = 6; ctl.maxDistance = 80;
+scene.add(new THREE.HemisphereLight(0xFFFFFF, 0xB9C4B6, .6));
+const sonce = new THREE.DirectionalLight(0xFFF3E2, 2.5);
+sonce.castShadow = true; sonce.shadow.mapSize.set(2048, 2048); sonce.shadow.bias = -.0004; sonce.shadow.normalBias = .02;
+scene.add(sonce, sonce.target);
+
+const tl = new THREE.TextureLoader();
+const TEX = {};
+for (const t of ['parket', 'ploscice', 'ploscice_kuhinja']) {
+  TEX[t] = ['diff', 'nor'].map((v, i) => { const x = tl.load(`tex/${t}_${v}.jpg`, () => { if (grp) zgradi(); });
+    x.wrapS = x.wrapT = THREE.RepeatWrapping; x.anisotropy = 8; if (!i) x.colorSpace = THREE.SRGBColorSpace; return x; });
+}
+const VELIKOST = { parket:2.2, ploscice:1.6, ploscice_kuhinja:1.8 };
+function talniMat(tla, w, d) {
+  const ime = tla === 'terasa' ? 'parket' : tla;
+  if (!TEX[ime].every(t => t.image)) return new THREE.MeshStandardMaterial({ color: tla === 'terasa' ? 0xA89C86 : 0xD8CFC1, roughness:.85 });
+  const [a, b] = TEX[ime].map(t => { const c = t.clone(); c.repeat.set(w / VELIKOST[ime], d / VELIKOST[ime]); return c; });
+  return new THREE.MeshStandardMaterial({ map:a, normalMap:b, roughness:.85, color: tla === 'terasa' ? 0xB4A994 : 0xFFFFFF });
+}
+const mat = (c, o = {}) => new THREE.MeshStandardMaterial({ color:c, roughness:.8, ...o });
+const M = { zid:mat(0xF6F6F3, { roughness:.9 }), vrh:mat(0x3E5F50, { roughness:.6 }), belo:mat(0xF4F4F1, { roughness:.5 }),
+  les:mat(0xA9875F, { roughness:.7 }), pult:mat(0x6F6A64, { roughness:.4 }), temno:mat(0x2A2D30, { roughness:.35 }),
+  blago:mat(0x8FA99A, { roughness:.95 }), rjuha:mat(0xFAFAF7, { roughness:.9 }), meja:mat(0x4A7340, { roughness:.95 }),
+  grm:mat(0x5A844A, { roughness:.95 }), deblo:mat(0x6B5440), podstavek:mat(0xE2DED6) };
+const LISTJE = [mat(0x5E8A4E, { roughness:.9 }), mat(0x6F9A5A, { roughness:.9 }), mat(0x4E7A43, { roughness:.9 })];
+
+let trava;
+{ const c = document.createElement('canvas'); c.width = c.height = 512; const k = c.getContext('2d');
+  for (let i = 0; i < 8; i++) { k.fillStyle = i % 2 ? '#5E8845' : '#557E40'; k.fillRect(i * 64, 0, 64, 512); }
+  for (let i = 0; i < 9000; i++) { const g = 90 + Math.random() * 70 | 0;
+    k.fillStyle = `rgba(${g - 40},${g + 40},${g - 60},${.1 + Math.random() * .18})`; k.fillRect(Math.random() * 512, Math.random() * 512, 1, 2 + Math.random() * 3); }
+  trava = new THREE.CanvasTexture(c); trava.colorSpace = THREE.SRGBColorSpace; trava.wrapS = trava.wrapT = THREE.RepeatWrapping; trava.anisotropy = 8; }
+
+const znacke = {};
+function znacka(k) {
+  if (znacke[k]) return znacke[k];
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+  const img = new Image();
+  img.onload = () => { c.getContext('2d').drawImage(img, 0, 0, 128, 128); t.needsUpdate = true; risi(); };
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 12 12" width="128" height="128"><circle r="5.6" fill="#fff" stroke="#1E4634" stroke-opacity=".22" stroke-width=".35"/><g transform="scale(1.15)">${SIM[k]}</g></svg>`);
+  return znacke[k] = t;
+}
+function nalepka(t) {
+  const c = document.createElement('canvas'); const k = c.getContext('2d'); const F = '600 40px "Bricolage Grotesque", "Segoe UI", sans-serif';
+  k.font = F; const w = Math.ceil(k.measureText(t).width) + 40; c.width = w; c.height = 64;
+  k.font = F; k.fillStyle = 'rgba(255,255,255,.93)'; k.beginPath(); k.roundRect(2, 2, w - 4, 60, 30); k.fill();
+  k.strokeStyle = 'rgba(30,70,52,.25)'; k.lineWidth = 2; k.stroke(); k.fillStyle = '#1E4634'; k.textBaseline = 'middle'; k.fillText(t, 20, 34);
+  const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map:tx, depthTest:false, transparent:true }));
+  sp.scale.set(.34 * w / 64, .34, 1); return sp;
+}
+
+let grp = null, ogrp = null, tlaSob = [];
+function pocisti(g) { g.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material && o.material.map && o.material.map.isCanvasTexture === false) {} }); }
+function box(g, x0, z0, x1, z1, y0, y1, m, senca = true) {
+  const me = new THREE.Mesh(new THREE.BoxGeometry(Math.abs(x1 - x0), y1 - y0, Math.abs(z1 - z0)), m);
+  me.position.set((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2); me.castShadow = senca; me.receiveShadow = true; g.add(me); return me;
+}
+const H = 1.0, T = .12;   // višina prereza zidov, polovična debelina
+
+function pohistvo(g, r) {
+  const { x, z, w, d } = r, cx = x + w / 2, cz = z + d / 2;
+  const mn = Math.min(w, d);
+  if (r.tip === 'dnevna') {
+    const sw = Math.min(2.2, w * .45);
+    box(g, cx - sw / 2, z + d * .62, cx + sw / 2, z + d * .62 + .85, 0, .42, M.blago);
+    box(g, cx - sw / 2, z + d * .62 + .65, cx + sw / 2, z + d * .62 + .85, .42, .82, M.blago);
+    box(g, cx - .5, z + d * .4, cx + .5, z + d * .4 + .55, 0, .38, M.les);
+    box(g, cx - .9, z + T + .05, cx + .9, z + T + .45, 0, .45, M.les);
+    box(g, cx - .75, z + T + .15, cx + .75, z + T + .22, .45, 1.25, M.temno);
+  } else if (r.tip === 'spalnica') {
+    const bw = Math.min(1.6, w - .8), bd = Math.min(2, d - .7);
+    box(g, cx - bw / 2, z + T + .05, cx + bw / 2, z + T + .05 + bd, 0, .32, M.les);
+    box(g, cx - bw / 2 + .05, z + T + .1, cx + bw / 2 - .05, z + T + bd, .32, .52, M.rjuha);
+    box(g, cx - bw / 2 + .03, z + T + .05 + bd * .45, cx + bw / 2 - .03, z + T + .05 + bd, .5, .58, M.blago);
+    box(g, cx - bw / 2 - .05, z + T, cx + bw / 2 + .05, z + T + .1, 0, .95, M.les);
+    if (w > bw + 1.2) { box(g, cx - bw / 2 - .5, z + T + .1, cx - bw / 2 - .08, z + T + .5, 0, .5, M.les);
+      box(g, cx + bw / 2 + .08, z + T + .1, cx + bw / 2 + .5, z + T + .5, 0, .5, M.les); }
+  } else if (r.tip === 'kuhinja') {
+    box(g, x + T, z + T, x + w - T, z + T + .6, 0, .88, M.belo); box(g, x + T - .02, z + T - .02, x + w - T + .02, z + T + .62, .88, .92, M.pult);
+    box(g, x + w * .35, z + T + .1, x + w * .35 + .55, z + T + .5, .92, .93, M.temno, false);
+    if (w > 3.4 && d > 3.4) { box(g, cx - .6, cz - .3, cx + .6, cz + .5, 0, .9, M.belo); box(g, cx - .64, cz - .34, cx + .64, cz + .54, .9, .95, M.les); }
+  } else if (r.tip === 'kopalnica') {
+    const kd = Math.min(1.7, d - .5);
+    box(g, x + T, z + T, x + T + .75, z + T + kd, 0, .55, M.belo);
+    box(g, x + T + .1, z + T + .1, x + T + .65, z + T + kd - .1, .47, .555, mat(0xD9E7EA, { roughness:.1 }), false);
+    box(g, x + w - T - .9, z + d - T - .5, x + w - T - .1, z + d - T, 0, .85, M.les);
+  } else if (r.tip === 'pisarna') {
+    box(g, cx - .7, z + T + .05, cx + .7, z + T + .75, .72, .76, M.les);
+    box(g, cx - .25, z + T + .9, cx + .25, z + T + 1.35, 0, .45, M.blago);
+  } else if (r.tip === 'wc') {
+    box(g, cx - .2, z + T + .05, cx + .2, z + T + .65, 0, .42, M.belo);
+  } else if (r.tip === 'hodnik' && w > 1.6) {
+    box(g, x + T + .2, z + d - T - .38, x + T + Math.min(1.4, w * .3), z + d - T - .02, 0, .45, M.les);
+  } else if (r.tip === 'stopnisce') {
+    const sw = Math.min(1.1, w - .4), n = Math.max(4, Math.min(10, Math.floor((d - .5) / .28)));
+    for (let i = 0; i < n; i++) box(g, x + T + .1, z + d - T - .1 - (i + 1) * .28, x + T + .1 + sw, z + d - T - .1 - i * .28, 0, (i + 1) * (.95 / n), M.les);
+  } else if (r.tip === 'terasa' && mn > 1.4) {
+    box(g, cx - .4, cz - .4, cx + .4, cz + .4, .7, .74, M.les);
+    for (const [dx, dz] of [[-.6, 0], [.6, 0]]) box(g, cx + dx - .2, cz + dz - .2, cx + dx + .2, cz + dz + .2, 0, .45, M.les);
+  }
+}
+
+function drevo(g, x, z, s) {
+  const db = new THREE.Mesh(new THREE.CylinderGeometry(.09 * s, .13 * s, 1.6 * s, 8), M.deblo);
+  db.position.set(x, .8 * s - .07, z); db.castShadow = true; g.add(db);
+  [[0, 2.2, 0, .9], [-.6, 1.8, .3, .65], [.6, 1.9, -.2, .7], [.2, 2.6, .3, .6], [-.3, 2.4, -.5, .6]].forEach(([dx, dy, dz, r], i) => {
+    const k = new THREE.Mesh(new THREE.IcosahedronGeometry(r * s, 1), LISTJE[i % 3]);
+    k.position.set(x + dx * s, dy * s - .07, z + dz * s); k.castShadow = k.receiveShadow = true; g.add(k);
+  });
+}
+
+function postavitve(r, n) {      // enakomerno razporejene točke v prostoru
+  const kol = Math.ceil(Math.sqrt(n * r.w / r.d)), vr = Math.ceil(n / kol), out = [];
+  for (let i = 0; i < n; i++) {
+    const c = i % kol, v = Math.floor(i / kol);
+    out.push([r.x + .45 + (r.w - .9) * (c + .5) / kol, r.z + .45 + (r.d - .9) * (v + .5) / vr]);
+  }
+  return out;
+}
+
+let prviOkvir = true;
+const PLOSCA = mat(0xE6E4DF, { roughness:.9 });
+function zgradi() {
+  if (grp) { scene.remove(grp); pocisti(grp); overlay.remove(ogrp); }
+  grp = new THREE.Group(); ogrp = new THREE.Group(); tlaSob = [];
+  scene.add(grp); overlay.add(ogrp);
+  const etaze = steviloEtaz();
+  if (pogledEtaza !== 'vse' && pogledEtaza >= etaze) pogledEtaza = 'vse';
+  const vidne = pogledEtaza === 'vse' ? [...Array(etaze).keys()] : [pogledEtaza];
+  const vse = st.sobe;
+  const okvir = sez => { let a = Infinity, b = Infinity, c = -Infinity, d = -Infinity;
+    for (const r of sez) { a = Math.min(a, r.x); b = Math.min(b, r.z); c = Math.max(c, r.x + r.w); d = Math.max(d, r.z + r.d); } return [a, b, c, d]; };
+  const zamik = {};
+  let x0 = Infinity, z0 = Infinity, x1 = -Infinity, z1 = -Infinity, pomik = 0;
+  for (const e of vidne) {
+    const sez = vse.filter(r => r.e === e); if (!sez.length) continue;
+    const [a, b, c, d] = okvir(sez);
+    const dx = pogledEtaza === 'vse' ? (e === vidne[0] ? 0 : pomik - a) : 0;
+    zamik[e] = { x: dx, y: pogledEtaza === 'vse' && e > 0 ? .45 : 0 };
+    x0 = Math.min(x0, a + dx); z0 = Math.min(z0, b); x1 = Math.max(x1, c + dx); z1 = Math.max(z1, d);
+    pomik = c + dx + 3.2;
+  }
+  // parcela
+  const P = 2.6, px0 = x0 - P, px1 = x1 + P, pz0 = z0 - P - .8, pz1 = z1 + P;
+  box(grp, px0, pz0, px1, pz1, -.6, -.14, M.podstavek, false);
+  const tm = new THREE.MeshStandardMaterial({ map:trava.clone(), roughness:1, color:0xC8CCC4 });
+  tm.map.repeat.set((px1 - px0) / 13, (pz1 - pz0) / 13);
+  const tr = new THREE.Mesh(new THREE.PlaneGeometry(px1 - px0, pz1 - pz0), tm);
+  tr.rotation.x = -Math.PI / 2; tr.position.set((px0 + px1) / 2, -.068, (pz0 + pz1) / 2); tr.receiveShadow = true; grp.add(tr);
+  const meja = (a, b, c, e) => { const m = new THREE.Mesh(new RoundedBoxGeometry(c - a, .55, e - b, 3, .16), M.meja);
+    m.position.set((a + c) / 2, .2, (b + e) / 2); m.castShadow = m.receiveShadow = true; grp.add(m); };
+  const sx = (x0 + x1) / 2;
+  meja(px0 + .3, pz1 - .9, sx - .9, pz1 - .3); meja(sx + .9, pz1 - .9, px1 - .3, pz1 - .3);
+  meja(px0 + .3, pz0 + .5, px0 + .9, pz1 - 1.1);
+  drevo(grp, px0 + 1.2, pz0 + 1, 1); drevo(grp, px1 - 1.4, pz0 + 1.1, 1.15);
+
+  const dash = new THREE.LineDashedMaterial({ color:0xB4612E, dashSize:.07, gapSize:.05, transparent:true, opacity:.8, depthTest:false });
+  const pikaM = new THREE.MeshBasicMaterial({ color:0xB4612E, depthTest:false });
+  const VIS = 1.75, VEL = .5;
+  const narisiNaprave = (og, tocke) => {
+    for (const [k, x, z, h] of tocke) {
+      const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map:znacka(k), depthTest:false, transparent:true }));
+      sp.scale.set(VEL, VEL, 1); sp.position.set(x, VIS, z); og.add(sp);
+      const l = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x, VIS - VEL / 2, z), new THREE.Vector3(x, h, z)]), dash);
+      l.computeLineDistances(); og.add(l);
+      const p = new THREE.Mesh(new THREE.SphereGeometry(.055, 12, 8), pikaM); p.position.set(x, h, z); og.add(p);
+    }
+  };
+
+  for (const e of vidne) {
+    const sobe = vse.filter(r => r.e === e);
+    if (!sobe.length) continue;
+    const off = zamik[e].y;
+    const fg = new THREE.Group(); fg.position.set(zamik[e].x, off, 0); grp.add(fg);
+    const ofg = new THREE.Group(); ofg.position.copy(fg.position); ogrp.add(ofg);
+    let bx0 = Infinity, bz0 = Infinity, bx1 = -Infinity, bz1 = -Infinity;
+    for (const r of sobe) { bx0 = Math.min(bx0, r.x); bz0 = Math.min(bz0, r.z); bx1 = Math.max(bx1, r.x + r.w); bz1 = Math.max(bz1, r.z + r.d); }
+    if (off > 0 || (pogledEtaza !== 'vse' && e > 0)) box(fg, bx0 - .1, bz0 - .1, bx1 + .1, bz1 + .1, -off - .06, -.01, PLOSCA);
+    for (const r of sobe) {
+      const t = TIPI[r.tip];
+      const tl = new THREE.Mesh(new THREE.PlaneGeometry(r.w, r.d), talniMat(t.tla, r.w, r.d));
+      tl.rotation.x = -Math.PI / 2; tl.position.set(r.x + r.w / 2, .005, r.z + r.d / 2); tl.receiveShadow = true;
+      tl.userData.soba = r.id; fg.add(tl); tlaSob.push(tl);
+      if (r.id === izbrana) {
+        const o = new THREE.Mesh(new THREE.PlaneGeometry(r.w - .02, r.d - .02), new THREE.MeshBasicMaterial({ color:0x1E4634, transparent:true, opacity:.14, depthWrite:false }));
+        o.rotation.x = -Math.PI / 2; o.position.set(r.x + r.w / 2, .012, r.z + r.d / 2); fg.add(o);
+      }
+      if (r.tip === 'terasa') {
+        box(fg, r.x, r.z, r.x + r.w, r.z + r.d, -.07, 0, M.les, false);
+      } else {
+        const zid = (a, b, c, d) => { box(fg, a, b, c, d, 0, H, M.zid); box(fg, a, b, c, d, H, H + .03, M.vrh, false); };
+        zid(r.x, r.z, r.x + r.w, r.z + T); zid(r.x, r.z + r.d - T, r.x + r.w, r.z + r.d);
+        zid(r.x, r.z + T, r.x + T, r.z + r.d - T); zid(r.x + r.w - T, r.z + T, r.x + r.w, r.z + r.d - T);
+      }
+      pohistvo(fg, r);
+      const lab = nalepka(r.ime); lab.position.set(r.x + r.w / 2, .2, r.z + r.d - .45); ofg.add(lab);
+    }
+    if (etaze > 1) { const el = nalepka(imeEtaze(e)); el.scale.multiplyScalar(1.35); el.center.set(0, .5); el.position.set(bx0 + .4, H + .5, bz0); ofg.add(el); }
+    const tocke = [];
+    const dodaj = (k, x, z, h) => tocke.push([k, x, z, h]);
+    for (const r of sobe) {
+      const sez = []; SOBNE.forEach(k => { for (let i = 0; i < r.n[k]; i++) sez.push(k); });
+      postavitve(r, sez.length).forEach(([x, z], i) => dodaj(sez[i], x, z, sez[i] === 'luc' ? H : .3));
+    }
+    if (e === 0) {    // naprave za ves dom so v pritličju
+      const najdi = t => sobe.find(r => r.tip === t) || sobe[0];
+      const hod = najdi('hodnik'), kop = najdi('kopalnica'), dne = najdi('dnevna');
+      const globalno = (k, r, n, fx, fz) => { for (let i = 0; i < n; i++) dodaj(k, r.x + r.w * (fx + i * .12), r.z + r.d * fz, .5); };
+      dodaj('enota', hod.x + hod.w * .75, hod.z + hod.d * .3, .5);
+      globalno('poraba', hod, st.skupno.poraba, .88, .3); globalno('tablica', hod, st.skupno.tablica, .62, .3);
+      globalno('kljuc', hod, st.skupno.kljuc, .5, .85);
+      globalno('bojler', kop, st.skupno.bojler, .8, .2); globalno('ventil', kop, st.skupno.ventil, .3, .85);
+      globalno('zat', dne, st.skupno.zat, .2, .18); globalno('vtic', dne, st.skupno.vtic, .78, .18); globalno('ir', dne, st.skupno.ir, .55, .1);
+      for (let i = 0; i < st.skupno.kamera; i++) dodaj('kamera', i ? bx0 + .5 : hod.x + hod.w * .5, i ? bz0 - .6 : bz1 + .7, .6);
+    }
+    narisiNaprave(ofg, tocke);
+  }
+  const visina = 0;
+  const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2, vel = Math.max(x1 - x0, z1 - z0) + 2 * P;
+  sonce.position.set(cx - vel * .5, vel * 1.1 + visina, cz - vel * .35); sonce.target.position.set(cx, 0, cz);
+  Object.assign(sonce.shadow.camera, { left:-vel * .8, right:vel * .8, top:vel * .8, bottom:-vel * .8, near:.5, far:vel * 4 });
+  sonce.shadow.camera.updateProjectionMatrix();
+  if (prviOkvir) {
+    const polmer = Math.hypot(px1 - px0, pz1 - pz0, visina) / 2;
+    const fit = polmer / Math.sin(THREE.MathUtils.degToRad(cam.fov) / 2) / Math.min(1, cam.aspect) * 1.08;
+    const smer = new THREE.Vector3(.38, .72, .58).normalize();
+    ctl.target.set(cx, visina * .5, (pz0 + pz1) / 2);
+    cam.position.copy(ctl.target).addScaledVector(smer, fit);
+    prviOkvir = false;
+  }
+  risiEtaze();
+  risi();
+}
+const etazeEl = document.getElementById('etaze');
+function risiEtaze() {
+  const n = steviloEtaz();
+  etazeEl.hidden = n < 2;
+  if (n < 2) return;
+  etazeEl.innerHTML = [['vse', 'Vse etaže'], ...[...Array(n).keys()].map(e => [e, imeEtaze(e)])]
+    .map(([k, l]) => `<button data-etaza="${k}" aria-pressed="${String(pogledEtaza) === String(k)}">${l}</button>`).join('');
+}
+etazeEl.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  pogledEtaza = b.dataset.etaza === 'vse' ? 'vse' : +b.dataset.etaza; prviOkvir = true; zgradi();
+});
+
+function velikost() {
+  const r = pogled.getBoundingClientRect();
+  renderer.setSize(r.width, r.height, false); cam.aspect = r.width / r.height; cam.updateProjectionMatrix(); risi();
+}
+let cakam = false;
+function risi() { if (cakam) return; cakam = true; requestAnimationFrame(() => { cakam = false; ctl.update();
+  renderer.autoClear = true; renderer.render(scene, cam); renderer.autoClear = false; renderer.clearDepth(); renderer.render(overlay, cam); }); }
+ctl.addEventListener('change', risi);
+new ResizeObserver(velikost).observe(pogled);
+
+// izbira prostora s klikom
+const ray = new THREE.Raycaster(), mis = new THREE.Vector2(); let dol = null;
+renderer.domElement.addEventListener('pointerdown', e => dol = [e.clientX, e.clientY]);
+renderer.domElement.addEventListener('pointerup', e => {
+  if (!dol || Math.hypot(e.clientX - dol[0], e.clientY - dol[1]) > 5) return;
+  const r = renderer.domElement.getBoundingClientRect();
+  mis.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
+  ray.setFromCamera(mis, cam);
+  const hit = ray.intersectObjects(tlaSob)[0];
+  izbrana = hit ? hit.object.userData.soba : null;
+  osvezi({ brez3d:false });
+  const el = document.querySelector(`[data-soba="${izbrana}"]`); if (el) el.scrollIntoView({ block:'nearest', behavior:'smooth' });
+});
+
+// ================= vmesnik =================
+const vs = document.getElementById('vsebina');
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+function prekrivanja() {
+  const s = st.sobe, out = new Set();
+  for (let i = 0; i < s.length; i++) for (let j = i + 1; j < s.length; j++) {
+    const a = s[i], b = s[j];
+    if (a.e === b.e && a.x < b.x + b.w - .01 && b.x < a.x + a.w - .01 && a.z < b.z + b.d - .01 && b.z < a.z + a.d - .01) { out.add(a.id); out.add(b.id); }
+  }
+  return out;
+}
+function zavihekTloris() {
+  const iz = izracun(st), prek = prekrivanja();
+  return `<h2>Izberite izhodišče</h2>
+  <div class="predloge">${Object.entries(PREDLOGE).map(([k, p]) => {
+    const pov = p.sobe.filter(s => s[0] !== 'terasa').reduce((a, s) => a + s[3] * s[4], 0);
+    return `<button data-predloga="${k}" aria-pressed="${st.predloga === k}"><b>${p.ime}</b><span>približno ${Math.round(pov)} m², ${prostorov(p.sobe.length)}</span></button>`; }).join('')}</div>
+  <h2>Nadstropja</h2>
+  <div class="etazni">${[...Array(steviloEtaz()).keys()].map(e => `<div class="etazna"><span><b>${imeEtaze(e)}</b> ${prostorov(st.sobe.filter(r => r.e === e).length)}</span>${e > 0 && e === steviloEtaz() - 1 ? `<button class="brisi-etazo" data-brisi-etazo="${e}">Odstrani</button>` : ''}</div>`).join('')}</div>
+  ${steviloEtaz() < MAX_ETAZ ? '<button class="dodaj" id="dodaj-etazo">Dodaj nadstropje</button>' : ''}
+  <h2>Prostori</h2>
+  <p class="opis">Mere so v metrih. Položaj določa levi zgornji kot prostora na tlorisu.</p>
+  ${st.sobe.slice().sort((a, b) => a.e - b.e).map((r, i, arr) => `${steviloEtaz() > 1 && (i === 0 || arr[i - 1].e !== r.e) ? `<h3 class="etaza-naslov">${imeEtaze(r.e)}</h3>` : ''}<div class="soba ${r.id === izbrana ? 'izbrana' : ''}" data-soba="${r.id}">
+    <div class="vrsta1">
+      <input type="text" value="${esc(r.ime)}" data-polje="ime" aria-label="Ime prostora" maxlength="40">
+      <select data-polje="tip" aria-label="Vrsta prostora">${Object.entries(TIPI).map(([k, t]) => `<option value="${k}" ${k === r.tip ? 'selected' : ''}>${t.ime}</option>`).join('')}</select>
+      <button class="brisi" data-brisi="${r.id}" aria-label="Odstrani ${esc(r.ime)}">×</button>
+    </div>
+    <div class="mere">
+      ${[['w', 'Širina'], ['d', 'Globina'], ['x', 'Levo'], ['z', 'Zgoraj']].map(([k, l]) =>
+        `<label>${l}<input type="number" step="0.1" min="${k === 'w' || k === 'd' ? 1 : -50}" max="40" value="${r[k]}" data-polje="${k}"></label>`).join('')}
+    </div>
+    ${steviloEtaz() > 1 ? `<label class="etaza-izbira">Etaža <select data-polje="e">${[...Array(steviloEtaz()).keys()].map(e => `<option value="${e}" ${e === r.e ? 'selected' : ''}>${imeEtaze(e)}</option>`).join('')}</select></label>` : ''}
+    ${prek.has(r.id) ? '<div class="opozorilo">Prostor se prekriva z drugim. Premaknite ga ali zmanjšajte.</div>' : ''}
+  </div>`).join('')}
+  <button class="dodaj" id="dodaj">Dodaj prostor</button>
+  <div class="povrsina">Skupaj ${m2(iz.povrsina)} m² notranjih prostorov.</div>`;
+}
+function stevec(kljuc, v, oznaka) {
+  const o = esc(oznaka);
+  return `<div class="stevec"><button data-minus="${kljuc}" aria-label="Manj: ${o}">−</button><output>${v}</output><button data-plus="${kljuc}" aria-label="Več: ${o}">+</button></div>`;
+}
+function zavihekNaprave() {
+  return `<p class="opis">Predlagali smo naprave glede na vrsto prostora. Število prilagodite po želji.</p>
+  ${st.sobe.slice().sort((a, b) => a.e - b.e).map((r, i, arr) => `${steviloEtaz() > 1 && (i === 0 || arr[i - 1].e !== r.e) ? `<h2>${imeEtaze(r.e)}</h2>` : ''}<div class="skupina ${r.id === izbrana ? 'izbrana' : ''}" data-soba="${r.id}">
+    <h3>${esc(r.ime)} <span>${m2(r.w * r.d)} m²</span></h3>
+    ${SOBNE.map(k => `<div class="naprava">${ikona(k)}<div class="ime">${KAT[k].ime}<small>${KAT[k].opis}</small></div>${stevec(r.id + ':' + k, r.n[k], KAT[k].ime + ', ' + r.ime)}</div>`).join('')}
+  </div>`).join('')}
+  <div class="skupina"><h3>Za ves dom</h3>
+    <div class="naprava">${ikona('enota')}<div class="ime">Krmilna enota<small>Home Assistant Green z Zigbee in Bluetooth</small></div><div class="stevec"><output style="padding:0 10px">1</output></div></div>
+    ${SKUPNE.map(k => `<div class="naprava">${ikona(k)}<div class="ime">${KAT[k].ime}<small>${KAT[k].opis}</small></div>${stevec('g:' + k, st.skupno[k], KAT[k].ime)}</div>`).join('')}
+  </div>`;
+}
+function vrsticeOpreme(iz) {
+  const v = [['Krmilna enota (Home Assistant Green, Zigbee, Bluetooth)', 1, ENOTA]];
+  for (const [k, d] of Object.entries(KAT)) if (iz.kol[k]) v.push([`${d.ime} (${d.opis})`, iz.kol[k], d.cena]);
+  return v;
+}
+function zavihekCena() {
+  const iz = izracun(st);
+  return `<p class="opis">Informativni izračun. Končno ponudbo pripravimo po ogledu doma.</p>
+  <table class="cene">
+    ${vrsticeOpreme(iz).map(([i, n, c]) => `<tr><td>${esc(i)} <small>× ${n}</small></td><td class="n">${f0(n * c)}</td></tr>`).join('')}
+    <tr><td>Drobni material</td><td class="n">${f0(iz.material)}</td></tr>
+    <tr><td>Nabava in garancija <small>(15 %)</small></td><td class="n">${f0(iz.nabava)}</td></tr>
+    <tr class="vsota"><td>Oprema skupaj</td><td class="n">${f0(iz.opremaSk)}</td></tr>
+    <tr><td>Delo <small>${m2(iz.ure)} h × ${URNA} €</small></td><td class="n">${f0(iz.delo)}</td></tr>
+    <tr><td>Elektroinštalacijska dela <small>${iz.moduli} modulov</small></td><td class="n">${f0(iz.elektro)}</td></tr>
+    <tr class="vsota"><td>Skupaj brez DDV</td><td class="n">${f0(iz.brez)}</td></tr>
+    <tr><td>DDV 22 %</td><td class="n">${f2(iz.ddv)}</td></tr>
+    <tr class="vsota"><td>Skupaj z DDV</td><td class="n">${f2(iz.z)}</td></tr>
+  </table>
+  <p class="opis" style="margin-top:12px">Vzdrževanje po želji: 19 € na mesec (23,18 € z DDV).</p>
+  <p class="opis">MM projekti, s.p. ni davčni zavezanec za DDV.</p>`;
+}
+
+function osvezi({ brez3d = false } = {}) {
+  const fokus = document.activeElement, sel = fokus && fokus.closest && fokus.closest('[data-soba]');
+  const fid = sel && sel.dataset.soba, fp = fokus && fokus.dataset && fokus.dataset.polje;
+  vs.innerHTML = zavihek === 'tloris' ? zavihekTloris() : zavihek === 'naprave' ? zavihekNaprave() : zavihekCena();
+  if (fid && fp) { const el = vs.querySelector(`[data-soba="${fid}"] [data-polje="${fp}"]`); if (el) { el.focus(); } }
+  const iz = izracun(st);
+  document.getElementById('z-ddv').textContent = f2(iz.z);
+  document.getElementById('z-brez').innerHTML = `${f0(iz.brez)} brez DDV<br>z DDV 22 %`;
+  history.replaceState(null, '', '#' + zakodiraj(st));
+  if (!brez3d) zgradi();
+}
+
+document.querySelectorAll('nav.zavihki button').forEach(b => b.addEventListener('click', () => {
+  zavihek = b.dataset.zavihek;
+  document.querySelectorAll('nav.zavihki button').forEach(x => x.setAttribute('aria-selected', x === b));
+  osvezi({ brez3d:true }); vs.scrollTop = 0;
+}));
+vs.addEventListener('click', e => {
+  const t = e.target.closest('button'); if (!t) return;
+  if (t.dataset.predloga) { st = izPredloge(t.dataset.predloga); izbrana = null; prviOkvir = true; osvezi(); return; }
+  if (t.dataset.brisi) { const r = st.sobe.find(x => x.id === +t.dataset.brisi);
+    if (st.sobe.filter(x => x.e === 0).length > 1 || (r && r.e > 0)) st.sobe = st.sobe.filter(x => x.id !== +t.dataset.brisi);
+    st.sobe.forEach(x => { while (x.e > 0 && !st.sobe.some(y => y.e === x.e - 1)) x.e--; });
+    st.predloga = null; osvezi(); return; }
+  if (t.id === 'dodaj-etazo') { dodajNadstropje(); osvezi(); return; }
+  if (t.dataset.brisiEtazo) { const e = +t.dataset.brisiEtazo; st.sobe = st.sobe.filter(r => r.e !== e); pogledEtaza = 'vse'; prviOkvir = true; st.predloga = null; osvezi(); return; }
+  if (t.id === 'dodaj') {
+    const e = pogledEtaza === 'vse' ? 0 : pogledEtaza, na = st.sobe.filter(r => r.e === e);
+    const x1 = Math.max(...na.map(r => r.x + r.w)), z0 = Math.min(...na.map(r => r.z));
+    const r = novaSoba('spalnica', x1, z0, 3.5, 3.5, 'Nov prostor', e); st.sobe.push(r); izbrana = r.id; st.predloga = null; osvezi(); return;
+  }
+  const k = t.dataset.plus || t.dataset.minus; if (!k) return;
+  const d = t.dataset.plus ? 1 : -1, [a, b] = k.split(':');
+  if (a === 'g') st.skupno[b] = Math.max(0, Math.min(10, st.skupno[b] + d));
+  else { const r = st.sobe.find(x => x.id === +a); r.n[b] = Math.max(0, Math.min(20, r.n[b] + d)); }
+  osvezi();
+});
+vs.addEventListener('change', e => {
+  const el = e.target, s = el.closest('[data-soba]'); if (!s || !el.dataset.polje) return;
+  const r = st.sobe.find(x => x.id === +s.dataset.soba), p = el.dataset.polje;
+  if (p === 'ime') r.ime = el.value.slice(0, 40) || TIPI[r.tip].ime;
+  else if (p === 'e') { r.e = Math.max(0, Math.min(MAX_ETAZ - 1, +el.value | 0)); }
+  else if (p === 'tip') { const staro = TIPI[r.tip].ime; r.tip = el.value; r.n = { ...TIPI[r.tip].def }; if (r.ime.startsWith(staro) || r.ime === 'Nov prostor') r.ime = TIPI[r.tip].ime; }
+  else { let v = parseFloat(String(el.value).replace(',', '.')); if (!isFinite(v)) return;
+    v = Math.round(v * 100) / 100; if (p === 'w' || p === 'd') v = Math.max(1, Math.min(40, v)); else v = Math.max(-50, Math.min(50, v)); r[p] = v; }
+  st.predloga = null; izbrana = r.id; osvezi();
+});
+vs.addEventListener('focusin', e => { const s = e.target.closest('[data-soba]'); if (s && +s.dataset.soba !== izbrana) { izbrana = +s.dataset.soba; zgradi(); } });
+
+const sporocilo = t => { const el = document.getElementById('sporocilo'); el.textContent = t; clearTimeout(sporocilo.t); sporocilo.t = setTimeout(() => el.textContent = '', 5000); };
+document.getElementById('g-povezava').addEventListener('click', async () => {
+  const url = location.href;
+  try { await navigator.clipboard.writeText(url); sporocilo('Povezava je kopirana. Z njo kadar koli odprete to izbiro.'); }
+  catch { prompt('Kopirajte povezavo:', url); }
+});
+
+// ================= ponudba v PDF =================
+const LOGO = '<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="13" fill="#1E4634"/><path d="M15 47V19l17 16 17-16v28" fill="none" stroke="#fff" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="32" cy="35" r="3" fill="#C2703B"/></svg>';
+function obrezi(cv) {          // izreže prazno ozadje okoli parcele
+  const w = cv.width, h = cv.height, c = document.createElement('canvas'); c.width = w; c.height = h;
+  const k = c.getContext('2d'); k.drawImage(cv, 0, 0);
+  const px = k.getImageData(0, 0, w, h).data, bg = [px[0], px[1], px[2]];
+  let x0 = w, y0 = h, x1 = 0, y1 = 0;
+  for (let y = 0; y < h; y += 2) for (let x = 0; x < w; x += 2) {
+    const i = (y * w + x) * 4;
+    if (Math.abs(px[i] - bg[0]) + Math.abs(px[i + 1] - bg[1]) + Math.abs(px[i + 2] - bg[2]) > 12) {
+      if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  }
+  if (x1 <= x0) return cv.toDataURL('image/jpeg', .9);
+  const m = Math.round(Math.min(w, h) * .02); x0 = Math.max(0, x0 - m); y0 = Math.max(0, y0 - m); x1 = Math.min(w, x1 + m); y1 = Math.min(h, y1 + m);
+  const o = document.createElement('canvas'); o.width = x1 - x0; o.height = y1 - y0;
+  const ok = o.getContext('2d'); ok.fillStyle = '#fff'; ok.fillRect(0, 0, o.width, o.height);
+  ok.drawImage(c, x0, y0, o.width, o.height, 0, 0, o.width, o.height);
+  // ozadje v belo, da se zlije s papirjem
+  const d = ok.getImageData(0, 0, o.width, o.height), q = d.data;
+  for (let i = 0; i < q.length; i += 4) if (Math.abs(q[i] - bg[0]) + Math.abs(q[i + 1] - bg[1]) + Math.abs(q[i + 2] - bg[2]) <= 6) { q[i] = q[i + 1] = q[i + 2] = 255; }
+  ok.putImageData(d, 0, 0);
+  return o.toDataURL('image/jpeg', .92);
+}
+function sestaviPonudbo() {
+  izbrana = null; pogledEtaza = 'vse'; prviOkvir = true; zgradi();
+  renderer.autoClear = true; renderer.render(scene, cam); renderer.autoClear = false; renderer.clearDepth(); renderer.render(overlay, cam);
+  const slika = obrezi(renderer.domElement);
+  const iz = izracun(st), dan = new Date();
+  const datum = `${dan.getDate()}. ${dan.getMonth() + 1}. ${dan.getFullYear()}`;
+  const veljavnost = new Date(dan.getTime() + 30 * 864e5);
+  const st_pon = `K-${dan.getFullYear()}${String(dan.getMonth() + 1).padStart(2, '0')}${String(dan.getDate()).padStart(2, '0')}-${zakodiraj(st).slice(-5)}`;
+  document.getElementById('ponudba').innerHTML = `
+  <div class="gl"><div class="zn">${LOGO} MM projekti, s.p.</div><div>Kardeljeva cesta 98, 2000 Maribor &nbsp; +386 41 891 030 &nbsp; matej.moharic@gmail.com</div></div>
+  <h1>Informativna ponudba<br>za pametni dom</h1>
+  <p class="podnaslov">Pripravljeno s konfiguratorjem na spletni strani MM projekti. Končno ponudbo potrdimo po ogledu doma.</p>
+  <div class="meta"><div><span>Številka</span><b>${st_pon}</b></div><div><span>Datum</span><b>${datum}</b></div>
+    <div><span>Naročnik</span><div class="crta"></div></div><div><span>Objekt</span><b>${m2(iz.povrsina)} m², ${prostorov(st.sobe.length)}${steviloEtaz() > 1 ? ', ' + etazStr(steviloEtaz()) : ''}</b></div></div>
+  <img class="slika" src="${slika}" alt="3D prikaz doma z napravami">
+  <h2>Oprema po prostorih</h2>
+  <table><thead><tr><th>Prostor</th><th>Naprave</th></tr></thead><tbody>
+    ${st.sobe.slice().sort((a, b) => a.e - b.e).map((r, i, arr) => `${steviloEtaz() > 1 && (i === 0 || arr[i - 1].e !== r.e) ? `<tr><td colspan="2" style="font-weight:600;color:#1E4634;padding-top:2mm">${imeEtaze(r.e)}</td></tr>` : ''}<tr><td>${esc(r.ime)} <span style="color:#5F6B64">${m2(r.w * r.d)} m²</span></td><td>${SOBNE.filter(k => r.n[k]).map(k => `${r.n[k]} × ${KAT[k].ime.toLowerCase()}`).join(', ') || '–'}</td></tr>`).join('')}
+  </tbody></table>
+  <h2>Razdelitev cene</h2>
+  <table><thead><tr><th>Postavka</th><th class="n">Količina</th><th class="n">Cena</th><th class="n">Znesek</th></tr></thead><tbody>
+    ${vrsticeOpreme(iz).map(([i, n, c]) => `<tr><td>${esc(i)}</td><td class="n">${n}</td><td class="n">${f2(c)}</td><td class="n">${f0(n * c)}</td></tr>`).join('')}
+    <tr><td>Drobni material</td><td></td><td></td><td class="n">${f0(iz.material)}</td></tr>
+    <tr><td>Nabava in garancija (naročanje, preizkus pred montažo, reklamacije), 15 %</td><td></td><td></td><td class="n">${f0(iz.nabava)}</td></tr>
+    <tr class="vs"><td>Oprema skupaj</td><td></td><td></td><td class="n">${f0(iz.opremaSk)}</td></tr>
+    <tr><td>Delo: ogled, priprava, montaža, povezovanje, avtomatizacije, tablica, predaja</td><td class="n">${m2(iz.ure)} h</td><td class="n">${f2(URNA)}</td><td class="n">${f0(iz.delo)}</td></tr>
+    <tr><td>Elektroinštalacijska dela (pooblaščeni elektroinštalater)</td><td class="n">${iz.moduli}</td><td class="n">${f2(ELEKTRO_MODUL)}</td><td class="n">${f0(iz.elektro)}</td></tr>
+  </tbody></table>
+  <div class="skupaj"><div class="v"><span>Oprema z nabavo in garancijo</span>${f0(iz.opremaSk)}<br><span>Delo</span>${f0(iz.delo)}<br><span>Elektroinštalacijska dela</span>${f0(iz.elektro)}<br><span>Skupaj brez DDV</span>${f0(iz.brez)}<br><span>DDV 22 %</span>${f2(iz.ddv)}</div>
+    <div><b>${f2(iz.z)}</b><small>skupaj z DDV</small></div></div>
+  <h2>Pogoji</h2>
+  <ul>
+    <li>Informativna ponudba velja do ${veljavnost.getDate()}. ${veljavnost.getMonth() + 1}. ${veljavnost.getFullYear()}. Obseg in količine potrdimo po ogledu.</li>
+    <li>Cene opreme se ob naročilu uskladijo s cenami dobaviteljev.</li>
+    <li>Plačilo: 50 % ob naročilu, 50 % ob predaji sistema. Rok izvedbe 2 do 4 tedne.</li>
+    <li>Garancija za opremo po pogojih proizvajalca, za izvedena dela 12 mesecev.</li>
+    <li>Vzdrževanje po želji: 19 € na mesec (23,18 € z DDV) ali 199 € na leto.</li>
+    <li>Potni stroški izven Maribora: 0,43 € na kilometer.</li>
+    <li>MM projekti, s.p. ni davčni zavezanec za DDV.</li>
+  </ul>
+  <div class="pod"><div><b>Ponudnik</b>Matej Moharič, MM projekti, s.p.</div><div><b>Potrditev naročnika</b>datum in podpis</div></div>`;
+}
+document.getElementById('g-pdf').addEventListener('click', () => {
+  sestaviPonudbo();
+  sporocilo('V oknu za tiskanje izberite »Shrani kot PDF«.');
+  setTimeout(() => window.print(), 300);
+});
+window.__ponudba = sestaviPonudbo;   // za samodejni preizkus
+
+velikost();
+osvezi();
+</script>
+</body>
+</html>

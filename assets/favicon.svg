@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="MM projekti">
+  <rect width="64" height="64" rx="13" fill="#1E4634"/>
+  <!-- blueprint corner ticks -->
+  <g stroke="#7FA98C" stroke-width="1.4" opacity="0.55">
+    <path d="M7 12V7h5M52 7h5v5M57 52v5h-5M12 57H7v-5" fill="none" stroke-linecap="round"/>
+  </g>
+  <!-- M monogram as a truss/roofline -->
+  <path d="M15 47V19l17 16 17-16v28" fill="none" stroke="#F4F1E9" stroke-width="5.2"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- apex node -->
+  <circle cx="32" cy="35" r="3" fill="#C2703B"/>
+  <!-- baseline -->
+  <line x1="15" y1="51" x2="49" y2="51" stroke="#7FA98C" stroke-width="1.6" stroke-linecap="round" opacity="0.7"/>
+</svg>

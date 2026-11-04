@@ -36,17 +36,23 @@
   .panel header { padding:18px 20px 0; }
   .panel h1 { font-size:21px; line-height:1.15; margin:0 0 4px; color:var(--pine); font-weight:600; letter-spacing:-.01em; }
   .panel header p { margin:0 0 14px; color:var(--soft); font-size:13.5px; }
+  .glava { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+  .glava h1 { min-width:0; }
+  .jeziki { display:flex; gap:2px; flex:none; }
+  .jeziki button { border:0; background:none; padding:4px 5px; border-radius:6px; color:var(--soft); font-family:var(--sans); font-size:11.5px; font-weight:600; letter-spacing:.03em; line-height:1.2; }
+  .jeziki button:hover { color:var(--pine); background:var(--tint); }
+  .jeziki button[aria-pressed="true"] { background:var(--pine); color:#fff; }
   nav.zavihki { display:grid; grid-template-columns:repeat(3,1fr); border-bottom:1px solid var(--rule); padding:0 12px; }
   nav.zavihki button { border:0; background:none; padding:10px 4px 11px; color:var(--soft); font-weight:500; border-bottom:2px solid transparent; margin-bottom:-1px; }
   nav.zavihki button[aria-selected="true"] { color:var(--pine); border-bottom-color:var(--pine); font-weight:600; }
-  .vsebina { flex:1; overflow:auto; padding:16px 20px 24px; }
+  .vsebina { flex:1; overflow-y:auto; overflow-x:hidden; padding:16px 20px 24px; }
   .vsebina h2 { font-size:15px; margin:18px 0 8px; color:var(--pine); font-weight:600; }
   .vsebina h2:first-child { margin-top:0; }
   .opis { color:var(--soft); font-size:13.5px; margin:0 0 10px; }
 
-  .predloge { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .predloge { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:8px; }
   .predloge button { text-align:left; border:1px solid var(--rule); background:var(--paper); border-radius:10px; padding:10px 12px; }
-  .predloge button b { display:block; font-weight:600; }
+  .predloge button b { display:block; font-weight:600; overflow-wrap:anywhere; hyphens:auto; }
   .predloge button span { font-size:12.5px; color:var(--soft); }
   .predloge button[aria-pressed="true"] { border-color:var(--pine); background:var(--tint); }
 
@@ -107,6 +113,8 @@
     .panel header { padding:10px 16px 0; }
     .panel h1 { font-size:17px; margin:0 0 2px; }
     .panel header p { display:none; }
+    .glava { gap:6px; }
+    .jeziki button { padding:4px; font-size:11px; }
     nav.zavihki button { padding:8px 4px 9px; font-size:14px; }
     .vsebina { padding:12px 16px 16px; }
     .namig { display:none; }
@@ -153,7 +161,7 @@
   #ponudba tr { page-break-inside:avoid; }
   #ponudba .skupaj { margin-top:4mm; display:grid; grid-template-columns:1fr auto; align-items:end; background:var(--pine); color:#fff; border-radius:2mm; padding:4.5mm 6mm; font-family:var(--sans); page-break-inside:avoid; }
   #ponudba .skupaj .v { font-size:8.8pt; line-height:1.75; opacity:.9; }
-  #ponudba .skupaj .v span { display:inline-block; min-width:50mm; }
+  #ponudba .skupaj .v span { display:inline-block; min-width:64mm; padding-right:3mm; }
   #ponudba .skupaj b { font-size:21pt; font-weight:600; }
   #ponudba .skupaj small { display:block; text-align:right; font-size:8pt; opacity:.8; }
   #ponudba ul { padding-left:4.5mm; margin:2mm 0; }
@@ -172,31 +180,34 @@
 </head>
 <body>
 <div class="app">
-  <main id="pogled" aria-label="3D prikaz doma">
-    <a class="znak" href="../" aria-label="MM projekti, domov">
+  <main id="pogled" aria-label="3D prikaz doma" data-i18n-aria="pogled3d">
+    <a class="znak" href="../" aria-label="MM projekti, domov" data-i18n-aria="domov">
       <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="13" fill="#1E4634"/><path d="M15 47V19l17 16 17-16v28" fill="none" stroke="#fff" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="32" cy="35" r="3" fill="#C2703B"/></svg>
       MM projekti
     </a>
-    <div class="etaze" id="etaze" role="group" aria-label="Prikaz etaž" hidden></div>
-    <div class="namig">Povlecite za vrtenje, kolešček za povečavo, klik na prostor ga izbere.</div>
+    <div class="etaze" id="etaze" role="group" aria-label="Prikaz etaž" data-i18n-aria="prikazEtaz" hidden></div>
+    <div class="namig" data-i18n="namig">Povlecite za vrtenje, kolešček za povečavo, klik na prostor ga izbere.</div>
   </main>
 
   <aside class="panel">
     <header>
-      <h1>Konfigurator pametnega doma</h1>
-      <p>Izberite tloris, prilagodite prostore in naprave. Cena se preračuna sproti.</p>
+      <div class="glava">
+        <h1 data-i18n="h1">Konfigurator pametnega doma</h1>
+        <div class="jeziki" id="jeziki" role="group" aria-label="Jezik"></div>
+      </div>
+      <p data-i18n="uvod">Izberite tloris, prilagodite prostore in naprave. Cena se preračuna sproti.</p>
     </header>
     <nav class="zavihki" role="tablist">
-      <button role="tab" data-zavihek="tloris" aria-selected="true">1. Tloris</button>
-      <button role="tab" data-zavihek="naprave" aria-selected="false">2. Naprave</button>
-      <button role="tab" data-zavihek="cena" aria-selected="false">3. Cena</button>
+      <button role="tab" data-zavihek="tloris" aria-selected="true" data-i18n="zTloris">1. Tloris</button>
+      <button role="tab" data-zavihek="naprave" aria-selected="false" data-i18n="zNaprave">2. Naprave</button>
+      <button role="tab" data-zavihek="cena" aria-selected="false" data-i18n="zCena">3. Cena</button>
     </nav>
     <div class="vsebina" id="vsebina"></div>
     <div class="noga">
       <div class="zneski"><b id="z-ddv">0 €</b><span id="z-brez">brez DDV</span></div>
       <div class="gumbi">
-        <button class="drugi" id="g-povezava"><span class="dolgo">Shrani povezavo</span><span class="kratko">Povezava</span></button>
-        <button class="glavni" id="g-pdf"><span class="dolgo">Ponudba v PDF</span><span class="kratko">PDF</span></button>
+        <button class="drugi" id="g-povezava"><span class="dolgo" data-i18n="shraniPovezavo">Shrani povezavo</span><span class="kratko" data-i18n="povezavaKratko">Povezava</span></button>
+        <button class="glavni" id="g-pdf"><span class="dolgo" data-i18n="ponudbaPdf">Ponudba v PDF</span><span class="kratko" data-i18n="pdfKratko">PDF</span></button>
       </div>
       <div class="sporocilo" id="sporocilo" role="status" aria-live="polite"></div>
     </div>
@@ -213,72 +224,428 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 // ================= cenik (usklajen s ponudbo 2026-PD-01) =================
 const URNA = 45, DDV = 0.22, ELEKTRO_MODUL = 26.67, MATERIAL = 0.034, NABAVA = 0.15, ENOTA = 187;
 const KAT = {
-  th:     { ime:'Temperatura in vlaga',    opis:'senzor Zigbee',           cena:8.4,   ure:.1 },
-  trv:    { ime:'Radiatorski ventil',       opis:'Sonoff TRVZB',            cena:31.5,  ure:.25 },
-  okno:   { ime:'Okenski kontakt',          opis:'radiator se ob zračenju ugasne', cena:10.5, ure:.1 },
-  pusc:   { ime:'Senzor puščanja vode',     opis:'obvestilo in zapora vode', cena:12.6, ure:.1 },
-  gib:    { ime:'Senzor gibanja',           opis:'luči in varovanje',       cena:12.6,  ure:.15 },
-  luc:    { ime:'Krmiljena luč',            opis:'Shelly 1 Mini Gen4 v dozi', cena:16.8, ure:0, modul:1 },
-  zat:    { ime:'Zatemnilnik',              opis:'Shelly Dimmer Gen4',      cena:31.5,  ure:0, modul:1 },
-  bojler: { ime:'Bojler po urniku',         opis:'Shelly 1PM Gen4 16 A',    cena:23.1,  ure:0, modul:1 },
-  poraba: { ime:'Merjenje porabe doma',     opis:'Shelly Pro 3EM',          cena:126,   ure:0, modul:1 },
-  ventil: { ime:'Zaporni ventil za vodo',   opis:'motorni, ob puščanju zapre', cena:57.75, ure:.4 },
-  kljuc:  { ime:'Pametna ključavnica',      opis:'s tipkovnico',            cena:210,   ure:1.2 },
-  kamera: { ime:'Zunanja kamera',           opis:'posnetki ostanejo doma',  cena:94.5,  ure:1 },
-  tablica:{ ime:'Stenska tablica',          opis:'10", s tlorisom doma',    cena:210,   ure:.6 },
-  vtic:   { ime:'Vtičnica z merjenjem',     opis:'za TV, pralni stroj …',   cena:15.75, ure:.05 },
-  ir:     { ime:'IR oddajnik za klimo',     opis:'upravljanje klime',       cena:21,    ure:.05 },
-};
+  th:     { cena:8.4,   ure:.1 },
+  trv:    { cena:31.5,  ure:.25 },
+  okno:   { cena:10.5,  ure:.1 },
+  pusc:   { cena:12.6,  ure:.1 },
+  gib:    { cena:12.6,  ure:.15 },
+  luc:    { cena:16.8,  ure:0, modul:1 },
+  zat:    { cena:31.5,  ure:0, modul:1 },
+  bojler: { cena:23.1,  ure:0, modul:1 },
+  poraba: { cena:126,   ure:0, modul:1 },
+  ventil: { cena:57.75, ure:.4 },
+  kljuc:  { cena:210,   ure:1.2 },
+  kamera: { cena:94.5,  ure:1 },
+  tablica:{ cena:210,   ure:.6 },
+  vtic:   { cena:15.75, ure:.05 },
+  ir:     { cena:21,    ure:.05 },
+};   // imena in opisi naprav so v I18N[jezik].nap
 const SOBNE = ['trv', 'th', 'okno', 'pusc', 'gib', 'luc'];
 const SKUPNE = ['poraba', 'bojler', 'zat', 'ventil', 'kljuc', 'kamera', 'tablica', 'vtic', 'ir'];
 
 const TIPI = {
-  dnevna:   { ime:'Dnevna soba', tla:'parket',           def:{ trv:1, th:1, okno:2, pusc:0, gib:0, luc:2 } },
-  kuhinja:  { ime:'Kuhinja',     tla:'ploscice_kuhinja', def:{ trv:1, th:1, okno:1, pusc:1, gib:1, luc:2 } },
-  spalnica: { ime:'Spalnica',    tla:'parket',           def:{ trv:1, th:1, okno:1, pusc:0, gib:0, luc:1 } },
-  kopalnica:{ ime:'Kopalnica',   tla:'ploscice',         def:{ trv:1, th:1, okno:1, pusc:2, gib:0, luc:1 } },
-  hodnik:   { ime:'Hodnik',      tla:'parket',           def:{ trv:1, th:1, okno:0, pusc:0, gib:1, luc:2 } },
-  pisarna:  { ime:'Pisarna',     tla:'parket',           def:{ trv:1, th:1, okno:1, pusc:0, gib:0, luc:1 } },
-  wc:       { ime:'WC',          tla:'ploscice',         def:{ trv:0, th:0, okno:0, pusc:1, gib:1, luc:1 } },
-  shramba:  { ime:'Shramba',     tla:'ploscice_kuhinja', def:{ trv:0, th:0, okno:0, pusc:0, gib:1, luc:1 } },
-  stopnisce:{ ime:'Stopnišče',   tla:'parket',           def:{ trv:0, th:0, okno:0, pusc:0, gib:1, luc:1 } },
-  terasa:   { ime:'Terasa',      tla:'terasa',           def:{ trv:0, th:0, okno:0, pusc:0, gib:0, luc:0 } },
-};
+  dnevna:   { tla:'parket',           def:{ trv:1, th:1, okno:2, pusc:0, gib:0, luc:2 } },
+  kuhinja:  { tla:'ploscice_kuhinja', def:{ trv:1, th:1, okno:1, pusc:1, gib:1, luc:2 } },
+  spalnica: { tla:'parket',           def:{ trv:1, th:1, okno:1, pusc:0, gib:0, luc:1 } },
+  kopalnica:{ tla:'ploscice',         def:{ trv:1, th:1, okno:1, pusc:2, gib:0, luc:1 } },
+  hodnik:   { tla:'parket',           def:{ trv:1, th:1, okno:0, pusc:0, gib:1, luc:2 } },
+  pisarna:  { tla:'parket',           def:{ trv:1, th:1, okno:1, pusc:0, gib:0, luc:1 } },
+  wc:       { tla:'ploscice',         def:{ trv:0, th:0, okno:0, pusc:1, gib:1, luc:1 } },
+  shramba:  { tla:'ploscice_kuhinja', def:{ trv:0, th:0, okno:0, pusc:0, gib:1, luc:1 } },
+  stopnisce:{ tla:'parket',           def:{ trv:0, th:0, okno:0, pusc:0, gib:1, luc:1 } },
+  terasa:   { tla:'terasa',           def:{ trv:0, th:0, okno:0, pusc:0, gib:0, luc:0 } },
+};   // imena vrst so v I18N[jezik].tip
 
-const PREDLOGE = {
-  garsonjera: { ime:'Garsonjera', sobe:[
+const PREDLOGE = {   // imena predlog so v I18N[jezik].predloga
+  garsonjera: { sobe:[
     ['dnevna',0,0,5,4.5],['kuhinja',5,0,2.6,4.5],['hodnik',0,4.5,5,2],['kopalnica',5,4.5,2.6,2]],
     skupno:{ poraba:0, bojler:1, zat:0, ventil:0, kljuc:1, kamera:0, tablica:0, vtic:1, ir:1 } },
-  dvosobno: { ime:'Dvosobno', sobe:[
+  dvosobno: { sobe:[
     ['kuhinja',0,0,3,4],['dnevna',3,0,5,4],['spalnica',8,0,4,4],['kopalnica',0,4,3,2.4],['hodnik',3,4,9,2.4],['terasa',12,0,1.8,4]],
     skupno:{ poraba:1, bojler:1, zat:1, ventil:1, kljuc:1, kamera:0, tablica:1, vtic:1, ir:1 } },
-  trisobno: { ime:'Trisobno', sobe:[
+  trisobno: { sobe:[
     ['kuhinja',0,0,3.1,4.85],['dnevna',3.1,0,6.2,4.85],['spalnica',9.3,0,5.05,4.85],
     ['kopalnica',0,4.85,3.1,3.5],['hodnik',3.1,4.85,6.2,3.5],['spalnica',9.3,4.85,5.05,3.5],['terasa',14.35,0,2.3,4.5]],
     skupno:{ poraba:1, bojler:1, zat:1, ventil:2, kljuc:1, kamera:1, tablica:1, vtic:1, ir:1 } },
-  hisa: { ime:'Hiša', sobe:[
+  hisa: { sobe:[
     ['kuhinja',0,0,4,5],['dnevna',4,0,7,5],['spalnica',11,0,4.5,5],
     ['kopalnica',0,5,3,3.5],['hodnik',3,5,5,3.5],['pisarna',8,5,3.5,3.5],['wc',11.5,5,1.5,3.5],['shramba',13,5,2.5,3.5],
     ['spalnica',0,8.5,5,3.5],['spalnica',5,8.5,5,3.5],['kopalnica',10,8.5,5.5,3.5],['terasa',15.5,0,3,5]],
     skupno:{ poraba:1, bojler:1, zat:2, ventil:2, kljuc:1, kamera:2, tablica:1, vtic:2, ir:2 } },
 };
 
+// ================= jeziki =================
+// prevodi so zaupanja vredne konstante; uporabniški nizi (imena prostorov) gredo vedno skozi esc()
+const skPl = (n, a, b, c) => n === 1 ? a : n >= 2 && n <= 4 ? b : c;
+const hrPl = (n, a, b, c) => { const d = n % 10, s = n % 100; return d === 1 && s !== 11 ? a : d >= 2 && d <= 4 && (s < 12 || s > 14) ? b : c; };
+const I18N = {
+  sl: {
+    loc:'sl-SI', ime:'Slovenščina',
+    naslovStrani:'Konfigurator pametnega doma | MM projekti',
+    opisStrani:'Sestavite pametni dom za svoje stanovanje ali hišo: izberite tloris, naprave po prostorih in takoj vidite ceno z DDV.',
+    pogled3d:'3D prikaz doma', domov:'MM projekti, domov', prikazEtaz:'Prikaz etaž',
+    namig:'Povlecite za vrtenje, kolešček za povečavo, klik na prostor ga izbere.',
+    h1:'Konfigurator pametnega doma', uvod:'Izberite tloris, prilagodite prostore in naprave. Cena se preračuna sproti.',
+    zTloris:'1. Tloris', zNaprave:'2. Naprave', zCena:'3. Cena', jezik:'Jezik',
+    shraniPovezavo:'Shrani povezavo', povezavaKratko:'Povezava', ponudbaPdf:'Ponudba v PDF', pdfKratko:'PDF',
+    brezDdv:'brez DDV', zDdv22:'z DDV 22 %',
+    izhodisce:'Izberite izhodišče', priblizno:(m, n) => `približno ${m} m², ${n}`,
+    nadstropja:'Nadstropja', odstrani:'Odstrani', dodajNadstropje:'Dodaj nadstropje', prostori:'Prostori',
+    mereOpis:'Mere so v metrih. Položaj določa levi zgornji kot prostora na tlorisu.',
+    imeProstora:'Ime prostora', vrstaProstora:'Vrsta prostora', odstraniSobo:i => `Odstrani ${i}`,
+    sirina:'Širina', globina:'Globina', levo:'Levo', zgoraj:'Zgoraj', etaza:'Etaža',
+    prekrivanje:'Prostor se prekriva z drugim. Premaknite ga ali zmanjšajte.',
+    dodajProstor:'Dodaj prostor', povrsina:m => `Skupaj ${m} m² notranjih prostorov.`,
+    manj:o => `Manj: ${o}`, vec:o => `Več: ${o}`,
+    napraveOpis:'Predlagali smo naprave glede na vrsto prostora. Število prilagodite po želji.',
+    zaVesDom:'Za ves dom', enota:'Krmilna enota', enotaOpis:'Home Assistant Green z Zigbee in Bluetooth',
+    enotaVrstica:'Krmilna enota (Home Assistant Green, Zigbee, Bluetooth)',
+    cenaOpis:'Informativni izračun. Končno ponudbo pripravimo po ogledu doma.',
+    material:'Drobni material', nabava:'Nabava in garancija', nabavaPct:'(15 %)', opremaSkupaj:'Oprema skupaj', delo:'Delo',
+    elektro:'Elektroinštalacijska dela', moduli:n => `${n} modulov`,
+    skupajBrez:'Skupaj brez DDV', ddvStopnja:'DDV 22 %', skupajZ:'Skupaj z DDV',
+    vzdrzevanje:(a, b) => `Vzdrževanje po želji: ${a} na mesec (${b} z DDV).`,
+    niZavezanec:'MM projekti, s.p. ni davčni zavezanec za DDV.',
+    odstranjen:(i, o) => `Prostor ${i} je odstranjen skupaj z napravami${o ? ', tudi: ' + o : ''}.`,
+    vsajEn:'Dom mora imeti vsaj en prostor v pritličju.',
+    odstranjenoTip:(tip, o) => `Odstranjeno, ker ni več prostora vrste ${tip}: ${o}.`,
+    kopirano:'Povezava je kopirana. Z njo kadar koli odprete to izbiro.', kopirajte:'Kopirajte povezavo:',
+    shraniPdf:'V oknu za tiskanje izberite »Shrani kot PDF«.',
+    vseEtaze:'Vse etaže', imeEtaze:e => e === 0 ? 'Pritličje' : `${e}. nadstropje`,
+    etazStr:n => n === 2 ? '2 etaži' : `${n} etaže`,
+    prostorov:n => n + ' ' + (n % 100 === 1 ? 'prostor' : n % 100 === 2 ? 'prostora' : (n % 100 === 3 || n % 100 === 4) ? 'prostori' : 'prostorov'),
+    ponNaslov:'Informativna ponudba<br>za pametni dom',
+    ponPodnaslov:'Pripravljeno s konfiguratorjem na spletni strani MM projekti. Končno ponudbo potrdimo po ogledu doma.',
+    stevilka:'Številka', datum:'Datum', narocnik:'Naročnik', objekt:'Objekt', slikaAlt:'3D prikaz doma z napravami',
+    opremaPoProstorih:'Oprema po prostorih', prostor:'Prostor', naprave:'Naprave',
+    razdelitev:'Razdelitev cene', postavka:'Postavka', kolicina:'Količina', cena:'Cena', znesek:'Znesek',
+    nabavaDolgo:'Nabava in garancija (naročanje, preizkus pred montažo, reklamacije), 15 %',
+    deloDolgo:'Delo: ogled, priprava, montaža, povezovanje, avtomatizacije, tablica, predaja',
+    elektroDolgo:'Elektroinštalacijska dela (pooblaščeni elektroinštalater)',
+    opremaZNabavo:'Oprema z nabavo in garancijo', skupajZMalo:'skupaj z DDV', pogoji:'Pogoji',
+    pogojiSez:d => [
+      `Informativna ponudba velja do ${d}. Obseg in količine potrdimo po ogledu.`,
+      'Cene opreme se ob naročilu uskladijo s cenami dobaviteljev.',
+      'Plačilo: 50 % ob naročilu, 50 % ob predaji sistema. Rok izvedbe 2 do 4 tedne.',
+      'Garancija za opremo po pogojih proizvajalca, za izvedena dela 12 mesecev.',
+      `Vzdrževanje po želji: ${f0(19)} na mesec (${f2(23.18)} z DDV) ali ${f0(199)} na leto.`,
+      `Potni stroški izven Maribora: ${f2(.43)} na kilometer.`,
+      'MM projekti, s.p. ni davčni zavezanec za DDV.'],
+    ponudnik:'Ponudnik', potrditev:'Potrditev naročnika', datumPodpis:'datum in podpis',
+    tip:{ dnevna:'Dnevna soba', kuhinja:'Kuhinja', spalnica:'Spalnica', kopalnica:'Kopalnica', hodnik:'Hodnik',
+      pisarna:'Pisarna', wc:'WC', shramba:'Shramba', stopnisce:'Stopnišče', terasa:'Terasa' },
+    predloga:{ garsonjera:'Garsonjera', dvosobno:'Dvosobno', trisobno:'Trisobno', hisa:'Hiša' },
+    nap:{
+      th:['Temperatura in vlaga', 'senzor Zigbee'], trv:['Radiatorski ventil', 'Sonoff TRVZB'],
+      okno:['Okenski kontakt', 'radiator se ob zračenju ugasne'], pusc:['Senzor puščanja vode', 'obvestilo in zapora vode'],
+      gib:['Senzor gibanja', 'luči in varovanje'], luc:['Krmiljena luč', 'Shelly 1 Mini Gen4 v dozi'],
+      zat:['Zatemnilnik', 'Shelly Dimmer Gen4'], bojler:['Bojler po urniku', 'Shelly 1PM Gen4 16 A'],
+      poraba:['Merjenje porabe doma', 'Shelly Pro 3EM'], ventil:['Zaporni ventil za vodo', 'motorni, ob puščanju zapre'],
+      kljuc:['Pametna ključavnica', 's tipkovnico'], kamera:['Zunanja kamera', 'posnetki ostanejo doma'],
+      tablica:['Stenska tablica', '10", s tlorisom doma'], vtic:['Vtičnica z merjenjem', 'za TV, pralni stroj …'],
+      ir:['IR oddajnik za klimo', 'upravljanje klime'] },
+  },
+  en: {
+    loc:'en-IE', ime:'English',
+    naslovStrani:'Smart home configurator | MM projekti',
+    opisStrani:'Plan a smart home for your flat or house: pick a floor plan and devices for each room, and see the price with VAT right away.',
+    pogled3d:'3D view of the home', domov:'MM projekti, home page', prikazEtaz:'Floors shown',
+    namig:'Drag to rotate, scroll to zoom, click a room to select it.',
+    h1:'Smart home configurator', uvod:'Pick a floor plan, then adjust the rooms and devices. The price updates as you go.',
+    zTloris:'1. Floor plan', zNaprave:'2. Devices', zCena:'3. Price', jezik:'Language',
+    shraniPovezavo:'Save link', povezavaKratko:'Link', ponudbaPdf:'Quote as PDF', pdfKratko:'PDF',
+    brezDdv:'excl. VAT', zDdv22:'incl. 22% VAT',
+    izhodisce:'Choose a starting point', priblizno:(m, n) => `about ${m} m², ${n}`,
+    nadstropja:'Floors', odstrani:'Remove', dodajNadstropje:'Add a floor', prostori:'Rooms',
+    mereOpis:'Sizes are in metres. The position is the top-left corner of the room on the plan.',
+    imeProstora:'Room name', vrstaProstora:'Room type', odstraniSobo:i => `Remove ${i}`,
+    sirina:'Width', globina:'Depth', levo:'Left', zgoraj:'Top', etaza:'Floor',
+    prekrivanje:'This room overlaps another one. Move it or make it smaller.',
+    dodajProstor:'Add a room', povrsina:m => `${m} m² of indoor space in total.`,
+    manj:o => `Fewer: ${o}`, vec:o => `More: ${o}`,
+    napraveOpis:'We suggested devices based on the room type. Change the numbers as you like.',
+    zaVesDom:'For the whole home', enota:'Hub', enotaOpis:'Home Assistant Green with Zigbee and Bluetooth',
+    enotaVrstica:'Hub (Home Assistant Green, Zigbee, Bluetooth)',
+    cenaOpis:'Indicative estimate. We prepare the final quote after visiting your home.',
+    material:'Small parts', nabava:'Sourcing and warranty', nabavaPct:'(15%)', opremaSkupaj:'Equipment total', delo:'Labour',
+    elektro:'Electrical work', moduli:n => `${n} ${n === 1 ? 'module' : 'modules'}`,
+    skupajBrez:'Total excl. VAT', ddvStopnja:'VAT 22%', skupajZ:'Total incl. VAT',
+    vzdrzevanje:(a, b) => `Optional maintenance: ${a} per month (${b} incl. VAT).`,
+    niZavezanec:'MM projekti, s.p. is not registered for VAT.',
+    odstranjen:(i, o) => `${i} has been removed together with its devices${o ? ', as well as: ' + o : ''}.`,
+    vsajEn:'The home needs at least one room on the ground floor.',
+    odstranjenoTip:(tip, o) => `Removed because there is no ${tip} any more: ${o}.`,
+    kopirano:'Link copied. Use it to open this setup at any time.', kopirajte:'Copy the link:',
+    shraniPdf:'In the print dialog, choose "Save as PDF".',
+    vseEtaze:'All floors', imeEtaze:e => e === 0 ? 'Ground floor' : `${e}${['st', 'nd', 'rd'][e - 1] || 'th'} floor`,
+    etazStr:n => `${n} floors`,
+    prostorov:n => `${n} ${n === 1 ? 'room' : 'rooms'}`,
+    ponNaslov:'Indicative quote<br>for a smart home',
+    ponPodnaslov:'Prepared with the configurator on the MM projekti website. We confirm the final quote after visiting your home.',
+    stevilka:'Number', datum:'Date', narocnik:'Client', objekt:'Property', slikaAlt:'3D view of the home with devices',
+    opremaPoProstorih:'Equipment by room', prostor:'Room', naprave:'Devices',
+    razdelitev:'Price breakdown', postavka:'Item', kolicina:'Qty', cena:'Price', znesek:'Amount',
+    nabavaDolgo:'Sourcing and warranty (ordering, testing before installation, claims), 15%',
+    deloDolgo:'Labour: site visit, preparation, installation, pairing, automations, tablet, handover',
+    elektroDolgo:'Electrical work (licensed electrician)',
+    opremaZNabavo:'Equipment with sourcing and warranty', skupajZMalo:'total incl. VAT', pogoji:'Terms',
+    pogojiSez:d => [
+      `This indicative quote is valid until ${d}. We confirm the scope and quantities after the visit.`,
+      'Equipment prices are matched to current supplier prices when you order.',
+      'Payment: 50% on order, 50% on handover of the system. Completion within 2 to 4 weeks.',
+      'Equipment warranty as per the manufacturer; 12 months on our work.',
+      `Optional maintenance: ${f0(19)} per month (${f2(23.18)} incl. VAT) or ${f0(199)} per year.`,
+      `Travel outside Maribor: ${f2(.43)} per kilometre.`,
+      'MM projekti, s.p. is not registered for VAT.'],
+    ponudnik:'Supplier', potrditev:'Client approval', datumPodpis:'date and signature',
+    tip:{ dnevna:'Living room', kuhinja:'Kitchen', spalnica:'Bedroom', kopalnica:'Bathroom', hodnik:'Hallway',
+      pisarna:'Office', wc:'Toilet', shramba:'Pantry', stopnisce:'Staircase', terasa:'Terrace' },
+    predloga:{ garsonjera:'Studio flat', dvosobno:'One-bedroom flat', trisobno:'Two-bedroom flat', hisa:'House' },
+    nap:{
+      th:['Temperature and humidity', 'Zigbee sensor'], trv:['Radiator valve', 'Sonoff TRVZB'],
+      okno:['Window contact', 'heating turns off while airing'], pusc:['Water leak sensor', 'alert and water shut-off'],
+      gib:['Motion sensor', 'lights and security'], luc:['Smart light', 'Shelly 1 Mini Gen4 in the wall box'],
+      zat:['Dimmer', 'Shelly Dimmer Gen4'], bojler:['Water heater on a schedule', 'Shelly 1PM Gen4 16 A'],
+      poraba:['Home energy monitoring', 'Shelly Pro 3EM'], ventil:['Water shut-off valve', 'motorised, closes on a leak'],
+      kljuc:['Smart lock', 'with keypad'], kamera:['Outdoor camera', 'recordings stay at home'],
+      tablica:['Wall tablet', '10", with your floor plan'], vtic:['Smart plug with metering', 'for TV, washing machine …'],
+      ir:['IR remote for air conditioner', 'controls your AC'] },
+  },
+  de: {
+    loc:'de-DE', ime:'Deutsch',
+    naslovStrani:'Smart-Home-Konfigurator | MM projekti',
+    opisStrani:'Stellen Sie Ihr Smart Home für Wohnung oder Haus zusammen: Grundriss wählen, Geräte pro Raum festlegen und sofort den Preis inkl. MwSt. sehen.',
+    pogled3d:'3D-Ansicht des Hauses', domov:'MM projekti, Startseite', prikazEtaz:'Angezeigte Etagen',
+    namig:'Ziehen zum Drehen, Mausrad zum Zoomen, Klick auf einen Raum wählt ihn aus.',
+    h1:'Smart-Home-Konfigurator', uvod:'Wählen Sie einen Grundriss und passen Sie Räume und Geräte an. Der Preis wird laufend berechnet.',
+    zTloris:'1. Grundriss', zNaprave:'2. Geräte', zCena:'3. Preis', jezik:'Sprache',
+    shraniPovezavo:'Link speichern', povezavaKratko:'Link', ponudbaPdf:'Angebot als PDF', pdfKratko:'PDF',
+    brezDdv:'ohne MwSt.', zDdv22:'inkl. 22 % MwSt.',
+    izhodisce:'Ausgangspunkt wählen', priblizno:(m, n) => `ca. ${m} m², ${n}`,
+    nadstropja:'Etagen', odstrani:'Entfernen', dodajNadstropje:'Etage hinzufügen', prostori:'Räume',
+    mereOpis:'Maße in Metern. Die Position gibt die linke obere Ecke des Raums im Grundriss an.',
+    imeProstora:'Raumname', vrstaProstora:'Raumart', odstraniSobo:i => `${i} entfernen`,
+    sirina:'Breite', globina:'Tiefe', levo:'Links', zgoraj:'Oben', etaza:'Etage',
+    prekrivanje:'Der Raum überschneidet sich mit einem anderen. Verschieben oder verkleinern Sie ihn.',
+    dodajProstor:'Raum hinzufügen', povrsina:m => `Insgesamt ${m} m² Innenfläche.`,
+    manj:o => `Weniger: ${o}`, vec:o => `Mehr: ${o}`,
+    napraveOpis:'Wir haben Geräte passend zur Raumart vorgeschlagen. Die Anzahl können Sie frei ändern.',
+    zaVesDom:'Für das ganze Haus', enota:'Steuerzentrale', enotaOpis:'Home Assistant Green mit Zigbee und Bluetooth',
+    enotaVrstica:'Steuerzentrale (Home Assistant Green, Zigbee, Bluetooth)',
+    cenaOpis:'Unverbindliche Berechnung. Das endgültige Angebot erstellen wir nach einer Besichtigung.',
+    material:'Kleinmaterial', nabava:'Beschaffung und Gewährleistung', nabavaPct:'(15 %)', opremaSkupaj:'Geräte gesamt', delo:'Arbeit',
+    elektro:'Elektroinstallation', moduli:n => `${n} ${n === 1 ? 'Modul' : 'Module'}`,
+    skupajBrez:'Summe ohne MwSt.', ddvStopnja:'MwSt. 22 %', skupajZ:'Summe inkl. MwSt.',
+    vzdrzevanje:(a, b) => `Wartung auf Wunsch: ${a} pro Monat (${b} inkl. MwSt.).`,
+    niZavezanec:'MM projekti, s.p. ist nicht umsatzsteuerpflichtig.',
+    odstranjen:(i, o) => `${i} wurde samt Geräten entfernt${o ? ', außerdem: ' + o : ''}.`,
+    vsajEn:'Das Haus braucht mindestens einen Raum im Erdgeschoss.',
+    odstranjenoTip:(tip, o) => `Entfernt, weil es keinen Raum der Art „${tip}“ mehr gibt: ${o}.`,
+    kopirano:'Link kopiert. Damit öffnen Sie diese Auswahl jederzeit wieder.', kopirajte:'Link kopieren:',
+    shraniPdf:'Wählen Sie im Druckfenster „Als PDF speichern“.',
+    vseEtaze:'Alle Etagen', imeEtaze:e => e === 0 ? 'Erdgeschoss' : `${e}. Obergeschoss`,
+    etazStr:n => `${n} Etagen`,
+    prostorov:n => `${n} ${n === 1 ? 'Raum' : 'Räume'}`,
+    ponNaslov:'Unverbindliches Angebot<br>für Ihr Smart Home',
+    ponPodnaslov:'Erstellt mit dem Konfigurator auf der Website von MM projekti. Das endgültige Angebot bestätigen wir nach einer Besichtigung.',
+    stevilka:'Nummer', datum:'Datum', narocnik:'Auftraggeber', objekt:'Objekt', slikaAlt:'3D-Ansicht des Hauses mit Geräten',
+    opremaPoProstorih:'Ausstattung nach Räumen', prostor:'Raum', naprave:'Geräte',
+    razdelitev:'Preisaufstellung', postavka:'Position', kolicina:'Menge', cena:'Preis', znesek:'Betrag',
+    nabavaDolgo:'Beschaffung und Gewährleistung (Bestellung, Test vor der Montage, Reklamationen), 15 %',
+    deloDolgo:'Arbeit: Besichtigung, Vorbereitung, Montage, Einbindung, Automationen, Tablet, Übergabe',
+    elektroDolgo:'Elektroinstallation (konzessionierter Elektriker)',
+    opremaZNabavo:'Geräte mit Beschaffung und Gewährleistung', skupajZMalo:'gesamt inkl. MwSt.', pogoji:'Bedingungen',
+    pogojiSez:d => [
+      `Dieses unverbindliche Angebot gilt bis ${d}. Umfang und Mengen bestätigen wir nach der Besichtigung.`,
+      'Die Gerätepreise werden bei der Bestellung an die aktuellen Lieferantenpreise angepasst.',
+      'Zahlung: 50 % bei Bestellung, 50 % bei Übergabe des Systems. Ausführung in 2 bis 4 Wochen.',
+      'Garantie auf Geräte nach Herstellerbedingungen, auf ausgeführte Arbeiten 12 Monate.',
+      `Wartung auf Wunsch: ${f0(19)} pro Monat (${f2(23.18)} inkl. MwSt.) oder ${f0(199)} pro Jahr.`,
+      `Fahrtkosten außerhalb von Maribor: ${f2(.43)} pro Kilometer.`,
+      'MM projekti, s.p. ist nicht umsatzsteuerpflichtig.'],
+    ponudnik:'Anbieter', potrditev:'Bestätigung des Auftraggebers', datumPodpis:'Datum und Unterschrift',
+    tip:{ dnevna:'Wohnzimmer', kuhinja:'Küche', spalnica:'Schlafzimmer', kopalnica:'Badezimmer', hodnik:'Flur',
+      pisarna:'Arbeitszimmer', wc:'WC', shramba:'Abstellraum', stopnisce:'Treppenhaus', terasa:'Terrasse' },
+    predloga:{ garsonjera:'Einzimmerwohnung', dvosobno:'Zweizimmerwohnung', trisobno:'Dreizimmerwohnung', hisa:'Haus' },
+    nap:{
+      th:['Temperatur und Luftfeuchte', 'Zigbee-Sensor'], trv:['Heizkörperthermostat', 'Sonoff TRVZB'],
+      okno:['Fensterkontakt', 'Heizung schaltet beim Lüften ab'], pusc:['Wassermelder', 'Alarm und Absperren des Wassers'],
+      gib:['Bewegungsmelder', 'Licht und Sicherheit'], luc:['Gesteuertes Licht', 'Shelly 1 Mini Gen4 in der Dose'],
+      zat:['Dimmer', 'Shelly Dimmer Gen4'], bojler:['Boiler nach Zeitplan', 'Shelly 1PM Gen4 16 A'],
+      poraba:['Verbrauchsmessung für das Haus', 'Shelly Pro 3EM'], ventil:['Wasser-Absperrventil', 'motorisch, schließt bei einem Leck'],
+      kljuc:['Smartes Türschloss', 'mit Tastenfeld'], kamera:['Außenkamera', 'Aufnahmen bleiben im Haus'],
+      tablica:['Wandtablet', '10", mit Grundriss des Hauses'], vtic:['Steckdose mit Verbrauchsmessung', 'für TV, Waschmaschine …'],
+      ir:['IR-Sender für die Klimaanlage', 'steuert die Klimaanlage'] },
+  },
+  sk: {
+    loc:'sk-SK', ime:'Slovenčina',
+    naslovStrani:'Konfigurátor inteligentnej domácnosti | MM projekti',
+    opisStrani:'Navrhnite si inteligentnú domácnosť pre byt alebo dom: vyberte pôdorys a zariadenia do miestností a hneď uvidíte cenu s DPH.',
+    pogled3d:'3D zobrazenie domu', domov:'MM projekti, úvodná stránka', prikazEtaz:'Zobrazené podlažia',
+    namig:'Ťahaním otáčate, kolieskom približujete, kliknutím vyberiete miestnosť.',
+    h1:'Konfigurátor inteligentnej domácnosti', uvod:'Vyberte pôdorys a upravte miestnosti a zariadenia. Cena sa prepočítava priebežne.',
+    zTloris:'1. Pôdorys', zNaprave:'2. Zariadenia', zCena:'3. Cena', jezik:'Jazyk',
+    shraniPovezavo:'Uložiť odkaz', povezavaKratko:'Odkaz', ponudbaPdf:'Ponuka v PDF', pdfKratko:'PDF',
+    brezDdv:'bez DPH', zDdv22:'s DPH 22 %',
+    izhodisce:'Vyberte východisko', priblizno:(m, n) => `približne ${m} m², ${n}`,
+    nadstropja:'Podlažia', odstrani:'Odstrániť', dodajNadstropje:'Pridať poschodie', prostori:'Miestnosti',
+    mereOpis:'Rozmery sú v metroch. Poloha určuje ľavý horný roh miestnosti na pôdoryse.',
+    imeProstora:'Názov miestnosti', vrstaProstora:'Typ miestnosti', odstraniSobo:i => `Odstrániť ${i}`,
+    sirina:'Šírka', globina:'Hĺbka', levo:'Zľava', zgoraj:'Zhora', etaza:'Podlažie',
+    prekrivanje:'Miestnosť sa prekrýva s inou. Posuňte ju alebo zmenšite.',
+    dodajProstor:'Pridať miestnosť', povrsina:m => `Spolu ${m} m² vnútorných priestorov.`,
+    manj:o => `Menej: ${o}`, vec:o => `Viac: ${o}`,
+    napraveOpis:'Zariadenia sme navrhli podľa typu miestnosti. Počet si upravte podľa potreby.',
+    zaVesDom:'Pre celý dom', enota:'Riadiaca jednotka', enotaOpis:'Home Assistant Green so Zigbee a Bluetooth',
+    enotaVrstica:'Riadiaca jednotka (Home Assistant Green, Zigbee, Bluetooth)',
+    cenaOpis:'Orientačný výpočet. Konečnú ponuku pripravíme po obhliadke domu.',
+    material:'Drobný materiál', nabava:'Nákup a záruka', nabavaPct:'(15 %)', opremaSkupaj:'Zariadenia spolu', delo:'Práca',
+    elektro:'Elektroinštalačné práce', moduli:n => `${n} ${skPl(n, 'modul', 'moduly', 'modulov')}`,
+    skupajBrez:'Spolu bez DPH', ddvStopnja:'DPH 22 %', skupajZ:'Spolu s DPH',
+    vzdrzevanje:(a, b) => `Údržba podľa želania: ${a} mesačne (${b} s DPH).`,
+    niZavezanec:'MM projekti, s.p. nie je platiteľom DPH.',
+    odstranjen:(i, o) => `Miestnosť ${i} bola odstránená aj so zariadeniami${o ? ', ďalej: ' + o : ''}.`,
+    vsajEn:'Dom musí mať aspoň jednu miestnosť na prízemí.',
+    odstranjenoTip:(tip, o) => `Odstránené, lebo už nie je žiadna miestnosť typu ${tip}: ${o}.`,
+    kopirano:'Odkaz je skopírovaný. Cezeň kedykoľvek otvoríte tento výber.', kopirajte:'Skopírujte odkaz:',
+    shraniPdf:'V okne tlače zvoľte „Uložiť ako PDF“.',
+    vseEtaze:'Všetky podlažia', imeEtaze:e => e === 0 ? 'Prízemie' : `${e}. poschodie`,
+    etazStr:n => `${n} ${skPl(n, 'podlažie', 'podlažia', 'podlaží')}`,
+    prostorov:n => `${n} ${skPl(n, 'miestnosť', 'miestnosti', 'miestností')}`,
+    ponNaslov:'Orientačná ponuka<br>pre inteligentnú domácnosť',
+    ponPodnaslov:'Pripravené pomocou konfigurátora na webovej stránke MM projekti. Konečnú ponuku potvrdíme po obhliadke domu.',
+    stevilka:'Číslo', datum:'Dátum', narocnik:'Objednávateľ', objekt:'Objekt', slikaAlt:'3D zobrazenie domu so zariadeniami',
+    opremaPoProstorih:'Vybavenie podľa miestností', prostor:'Miestnosť', naprave:'Zariadenia',
+    razdelitev:'Rozpis ceny', postavka:'Položka', kolicina:'Množstvo', cena:'Cena', znesek:'Suma',
+    nabavaDolgo:'Nákup a záruka (objednanie, skúška pred montážou, reklamácie), 15 %',
+    deloDolgo:'Práca: obhliadka, príprava, montáž, prepojenie, automatizácie, tablet, odovzdanie',
+    elektroDolgo:'Elektroinštalačné práce (oprávnený elektrikár)',
+    opremaZNabavo:'Zariadenia s nákupom a zárukou', skupajZMalo:'spolu s DPH', pogoji:'Podmienky',
+    pogojiSez:d => [
+      `Orientačná ponuka platí do ${d}. Rozsah a množstvá potvrdíme po obhliadke.`,
+      'Ceny zariadení sa pri objednávke prispôsobia aktuálnym cenám dodávateľov.',
+      'Platba: 50 % pri objednávke, 50 % pri odovzdaní systému. Termín realizácie 2 až 4 týždne.',
+      'Záruka na zariadenia podľa podmienok výrobcu, na vykonané práce 12 mesiacov.',
+      `Údržba podľa želania: ${f0(19)} mesačne (${f2(23.18)} s DPH) alebo ${f0(199)} ročne.`,
+      `Cestovné náklady mimo Mariboru: ${f2(.43)} za kilometer.`,
+      'MM projekti, s.p. nie je platiteľom DPH.'],
+    ponudnik:'Dodávateľ', potrditev:'Potvrdenie objednávateľa', datumPodpis:'dátum a podpis',
+    tip:{ dnevna:'Obývačka', kuhinja:'Kuchyňa', spalnica:'Spálňa', kopalnica:'Kúpeľňa', hodnik:'Chodba',
+      pisarna:'Pracovňa', wc:'WC', shramba:'Komora', stopnisce:'Schodisko', terasa:'Terasa' },
+    predloga:{ garsonjera:'Garsónka', dvosobno:'2-izbový byt', trisobno:'3-izbový byt', hisa:'Dom' },
+    nap:{
+      th:['Teplota a vlhkosť', 'senzor Zigbee'], trv:['Radiátorová hlavica', 'Sonoff TRVZB'],
+      okno:['Okenný kontakt', 'pri vetraní sa radiátor vypne'], pusc:['Senzor úniku vody', 'upozornenie a uzavretie vody'],
+      gib:['Senzor pohybu', 'svetlá a zabezpečenie'], luc:['Ovládané svetlo', 'Shelly 1 Mini Gen4 v krabici'],
+      zat:['Stmievač', 'Shelly Dimmer Gen4'], bojler:['Bojler podľa rozvrhu', 'Shelly 1PM Gen4 16 A'],
+      poraba:['Meranie spotreby domu', 'Shelly Pro 3EM'], ventil:['Uzatvárací ventil vody', 'motorový, pri úniku zatvorí'],
+      kljuc:['Inteligentný zámok', 's klávesnicou'], kamera:['Vonkajšia kamera', 'záznamy zostávajú doma'],
+      tablica:['Nástenný tablet', '10", s pôdorysom domu'], vtic:['Zásuvka s meraním', 'pre TV, práčku …'],
+      ir:['IR vysielač pre klimatizáciu', 'ovládanie klimatizácie'] },
+  },
+  hr: {
+    loc:'hr-HR', ime:'Hrvatski',
+    naslovStrani:'Konfigurator pametnog doma | MM projekti',
+    opisStrani:'Složite pametni dom za svoj stan ili kuću: odaberite tlocrt i uređaje po prostorijama i odmah vidite cijenu s PDV-om.',
+    pogled3d:'3D prikaz doma', domov:'MM projekti, početna stranica', prikazEtaz:'Prikaz etaža',
+    namig:'Povucite za okretanje, kotačićem povećajte, klikom odaberite prostoriju.',
+    h1:'Konfigurator pametnog doma', uvod:'Odaberite tlocrt i prilagodite prostorije i uređaje. Cijena se računa odmah.',
+    zTloris:'1. Tlocrt', zNaprave:'2. Uređaji', zCena:'3. Cijena', jezik:'Jezik',
+    shraniPovezavo:'Spremi poveznicu', povezavaKratko:'Poveznica', ponudbaPdf:'Ponuda u PDF-u', pdfKratko:'PDF',
+    brezDdv:'bez PDV-a', zDdv22:'s PDV-om 22 %',
+    izhodisce:'Odaberite polazište', priblizno:(m, n) => `oko ${m} m², ${n}`,
+    nadstropja:'Etaže', odstrani:'Ukloni', dodajNadstropje:'Dodaj kat', prostori:'Prostorije',
+    mereOpis:'Mjere su u metrima. Položaj određuje gornji lijevi kut prostorije na tlocrtu.',
+    imeProstora:'Naziv prostorije', vrstaProstora:'Vrsta prostorije', odstraniSobo:i => `Ukloni ${i}`,
+    sirina:'Širina', globina:'Dubina', levo:'Lijevo', zgoraj:'Gore', etaza:'Etaža',
+    prekrivanje:'Prostorija se preklapa s drugom. Pomaknite je ili smanjite.',
+    dodajProstor:'Dodaj prostoriju', povrsina:m => `Ukupno ${m} m² unutarnjeg prostora.`,
+    manj:o => `Manje: ${o}`, vec:o => `Više: ${o}`,
+    napraveOpis:'Uređaje smo predložili prema vrsti prostorije. Broj prilagodite po želji.',
+    zaVesDom:'Za cijeli dom', enota:'Upravljačka jedinica', enotaOpis:'Home Assistant Green sa Zigbeejem i Bluetoothom',
+    enotaVrstica:'Upravljačka jedinica (Home Assistant Green, Zigbee, Bluetooth)',
+    cenaOpis:'Informativni izračun. Konačnu ponudu pripremamo nakon pregleda doma.',
+    material:'Sitni materijal', nabava:'Nabava i jamstvo', nabavaPct:'(15 %)', opremaSkupaj:'Oprema ukupno', delo:'Rad',
+    elektro:'Elektroinstalacijski radovi', moduli:n => `${n} ${hrPl(n, 'modul', 'modula', 'modula')}`,
+    skupajBrez:'Ukupno bez PDV-a', ddvStopnja:'PDV 22 %', skupajZ:'Ukupno s PDV-om',
+    vzdrzevanje:(a, b) => `Održavanje po želji: ${a} mjesečno (${b} s PDV-om).`,
+    niZavezanec:'MM projekti, s.p. nije obveznik PDV-a.',
+    odstranjen:(i, o) => `Prostorija ${i} uklonjena je zajedno s uređajima${o ? ', a uz to i: ' + o : ''}.`,
+    vsajEn:'Dom mora imati barem jednu prostoriju u prizemlju.',
+    odstranjenoTip:(tip, o) => `Uklonjeno jer više nema prostorije vrste ${tip}: ${o}.`,
+    kopirano:'Poveznica je kopirana. Njome u bilo kojem trenutku otvarate ovaj odabir.', kopirajte:'Kopirajte poveznicu:',
+    shraniPdf:'U prozoru za ispis odaberite „Spremi kao PDF”.',
+    vseEtaze:'Sve etaže', imeEtaze:e => e === 0 ? 'Prizemlje' : `${e}. kat`,
+    etazStr:n => `${n} ${hrPl(n, 'etaža', 'etaže', 'etaža')}`,
+    prostorov:n => `${n} ${hrPl(n, 'prostorija', 'prostorije', 'prostorija')}`,
+    ponNaslov:'Informativna ponuda<br>za pametni dom',
+    ponPodnaslov:'Pripremljeno konfiguratorom na web-stranici MM projekti. Konačnu ponudu potvrđujemo nakon pregleda doma.',
+    stevilka:'Broj', datum:'Datum', narocnik:'Naručitelj', objekt:'Objekt', slikaAlt:'3D prikaz doma s uređajima',
+    opremaPoProstorih:'Oprema po prostorijama', prostor:'Prostorija', naprave:'Uređaji',
+    razdelitev:'Raspodjela cijene', postavka:'Stavka', kolicina:'Količina', cena:'Cijena', znesek:'Iznos',
+    nabavaDolgo:'Nabava i jamstvo (naručivanje, ispitivanje prije montaže, reklamacije), 15 %',
+    deloDolgo:'Rad: pregled, priprema, montaža, povezivanje, automatizacije, tablet, primopredaja',
+    elektroDolgo:'Elektroinstalacijski radovi (ovlašteni elektroinstalater)',
+    opremaZNabavo:'Oprema s nabavom i jamstvom', skupajZMalo:'ukupno s PDV-om', pogoji:'Uvjeti',
+    pogojiSez:d => [
+      `Informativna ponuda vrijedi do ${d.replace(/\.$/, '')}. Opseg i količine potvrđujemo nakon pregleda.`,
+      'Cijene opreme pri narudžbi se usklađuju s cijenama dobavljača.',
+      'Plaćanje: 50 % pri narudžbi, 50 % pri primopredaji sustava. Rok izvedbe 2 do 4 tjedna.',
+      'Jamstvo za opremu prema uvjetima proizvođača, za izvedene radove 12 mjeseci.',
+      `Održavanje po želji: ${f0(19)} mjesečno (${f2(23.18)} s PDV-om) ili ${f0(199)} godišnje.`,
+      `Putni troškovi izvan Maribora: ${f2(.43)} po kilometru.`,
+      'MM projekti, s.p. nije obveznik PDV-a.'],
+    ponudnik:'Ponuditelj', potrditev:'Potvrda naručitelja', datumPodpis:'datum i potpis',
+    tip:{ dnevna:'Dnevni boravak', kuhinja:'Kuhinja', spalnica:'Spavaća soba', kopalnica:'Kupaonica', hodnik:'Hodnik',
+      pisarna:'Radna soba', wc:'WC', shramba:'Ostava', stopnisce:'Stubište', terasa:'Terasa' },
+    predloga:{ garsonjera:'Garsonijera', dvosobno:'Dvosoban stan', trisobno:'Trosoban stan', hisa:'Kuća' },
+    nap:{
+      th:['Temperatura i vlaga', 'Zigbee senzor'], trv:['Radijatorski ventil', 'Sonoff TRVZB'],
+      okno:['Prozorski kontakt', 'radijator se gasi pri prozračivanju'], pusc:['Senzor curenja vode', 'obavijest i zatvaranje vode'],
+      gib:['Senzor pokreta', 'svjetla i zaštita'], luc:['Upravljano svjetlo', 'Shelly 1 Mini Gen4 u kutiji'],
+      zat:['Prigušivač svjetla', 'Shelly Dimmer Gen4'], bojler:['Bojler po rasporedu', 'Shelly 1PM Gen4 16 A'],
+      poraba:['Mjerenje potrošnje doma', 'Shelly Pro 3EM'], ventil:['Zaporni ventil za vodu', 'motorni, zatvara pri curenju'],
+      kljuc:['Pametna brava', 's tipkovnicom'], kamera:['Vanjska kamera', 'snimke ostaju kod kuće'],
+      tablica:['Zidni tablet', '10", s tlocrtom doma'], vtic:['Utičnica s mjerenjem', 'za TV, perilicu rublja …'],
+      ir:['IR odašiljač za klimu', 'upravljanje klimom'] },
+  },
+};
+const JEZIKI = Object.keys(I18N), JEZIK_KLJUC = 'mm-konf-jezik';
+let jezik = (() => {
+  const q = String(new URLSearchParams(location.search).get('lang') || '').toLowerCase();
+  if (JEZIKI.includes(q)) return q;
+  try { const s = localStorage.getItem(JEZIK_KLJUC); if (JEZIKI.includes(s)) return s; } catch {}
+  const n = String(navigator.language || '').slice(0, 2).toLowerCase();
+  return JEZIKI.includes(n) ? n : 'sl';
+})();
+function t(k, ...a) { const v = I18N[jezik][k] ?? I18N.sl[k]; return typeof v === 'function' ? v(...a) : v; }
+const imeNap = k => I18N[jezik].nap[k][0], opisNap = k => I18N[jezik].nap[k][1];
+const imeTipa = k => I18N[jezik].tip[k], imePredloge = k => I18N[jezik].predloga[k];
+const malo = s => jezik === 'de' ? s : s.toLowerCase();   // nemški samostalniki ostanejo z veliko
+
 // ================= stanje =================
 let st, izbrana = null, zavihek = 'tloris', nid = 1, pogledEtaza = 'vse';
 const ETAZA_H = 3.0, MAX_ETAZ = 3;
-function novaSoba(tip, x, z, w, d, ime, e = 0) {
-  return { id:nid++, tip, ime:ime || TIPI[tip].ime, x, z, w, d, e, n:{ ...TIPI[tip].def } };
+function novaSoba(tip, x, z, w, d, ime, e = 0) {   // ime: samo lastno ime, '' = samodejno
+  return { id:nid++, tip, ime:ime || '', x, z, w, d, e, n:{ ...TIPI[tip].def } };
 }
+// samodejno ime: prevedena vrsta, s številko, kadar je več samodejno poimenovanih prostorov iste vrste
+function samodejnoIme(r, s = st) {
+  const iste = s.sobe.filter(x => x.tip === r.tip && !x.ime);
+  const i = iste.indexOf(r);
+  return imeTipa(r.tip) + (iste.length > 1 && i >= 0 ? ' ' + (i + 1) : '');
+}
+const imeSobe = (r, s = st) => r.ime || samodejnoIme(r, s);
 const GOSTITELJ = { hodnik:['poraba', 'tablica', 'kljuc'], kopalnica:['bojler', 'ventil'], dnevna:['zat', 'vtic', 'ir'] };
 function pocistiSkupne(tip) {        // vrne seznam odstranjenih naprav
   const odstranjeno = [];
   if (!GOSTITELJ[tip] || st.sobe.some(r => r.e === 0 && r.tip === tip)) return odstranjeno;
-  for (const k of GOSTITELJ[tip]) if (st.skupno[k]) { odstranjeno.push(`${st.skupno[k]} × ${KAT[k].ime.toLowerCase()}`); st.skupno[k] = 0; }
+  for (const k of GOSTITELJ[tip]) if (st.skupno[k]) { odstranjeno.push(`${st.skupno[k]} × ${malo(imeNap(k))}`); st.skupno[k] = 0; }
   return odstranjeno;
 }
 const steviloEtaz = (s = st) => 1 + Math.max(0, ...s.sobe.map(r => r.e));
-const imeEtaze = e => e === 0 ? 'Pritličje' : `${e}. nadstropje`;
-const etazStr = n => n === 2 ? '2 etaži' : `${n} etaže`;
+const imeEtaze = e => t('imeEtaze', e);
+const etazStr = n => t('etazStr', n);
 function dodajNadstropje() {
   const e = steviloEtaz();
   if (e >= MAX_ETAZ) return;
@@ -286,26 +653,25 @@ function dodajNadstropje() {
   const X0 = Math.min(...spod.map(r => r.x)), Z0 = Math.min(...spod.map(r => r.z));
   const W = Math.max(...spod.map(r => r.x + r.w)) - X0, D = Math.max(...spod.map(r => r.z + r.d)) - Z0;
   const r1 = Math.round(D * .55 * 10) / 10, r2 = Math.round((D - r1) * 10) / 10, w3 = Math.round(W / 3 * 10) / 10;
-  let sp = st.sobe.filter(r => r.tip === 'spalnica').length;
   const nove = [
-    novaSoba('spalnica', X0, Z0, w3, r1, `Spalnica ${++sp}`, e),
-    novaSoba('spalnica', X0 + w3, Z0, w3, r1, `Spalnica ${++sp}`, e),
-    novaSoba('spalnica', X0 + 2 * w3, Z0, Math.round((W - 2 * w3) * 10) / 10, r1, `Spalnica ${++sp}`, e),
-    novaSoba('kopalnica', X0, Z0 + r1, Math.round(W * .3 * 10) / 10, r2, `Kopalnica (${imeEtaze(e)})`, e),
-    novaSoba('hodnik', X0 + Math.round(W * .3 * 10) / 10, Z0 + r1, Math.round(W * .4 * 10) / 10, r2, `Hodnik (${imeEtaze(e)})`, e),
-    novaSoba('stopnisce', X0 + Math.round(W * .7 * 10) / 10, Z0 + r1, Math.round(W * .3 * 10) / 10, r2, 'Stopnišče', e),
+    novaSoba('spalnica', X0, Z0, w3, r1, '', e),
+    novaSoba('spalnica', X0 + w3, Z0, w3, r1, '', e),
+    novaSoba('spalnica', X0 + 2 * w3, Z0, Math.round((W - 2 * w3) * 10) / 10, r1, '', e),
+    novaSoba('kopalnica', X0, Z0 + r1, Math.round(W * .3 * 10) / 10, r2, '', e),
+    novaSoba('hodnik', X0 + Math.round(W * .3 * 10) / 10, Z0 + r1, Math.round(W * .4 * 10) / 10, r2, '', e),
+    novaSoba('stopnisce', X0 + Math.round(W * .7 * 10) / 10, Z0 + r1, Math.round(W * .3 * 10) / 10, r2, '', e),
   ];
   st.sobe.push(...nove); st.predloga = null; pogledEtaza = e; prviOkvir = true; izbrana = null;
 }
 function izPredloge(k) {
   const p = PREDLOGE[k]; nid = 1;
-  const stevec = {};
-  const sobe = p.sobe.map(([t, x, z, w, d]) => {
-    stevec[t] = (stevec[t] || 0) + 1;
-    const vseh = p.sobe.filter(s => s[0] === t).length;
-    return novaSoba(t, x, z, w, d, vseh > 1 ? `${TIPI[t].ime} ${stevec[t]}` : undefined);
-  });
+  const sobe = p.sobe.map(([tip, x, z, w, d]) => novaSoba(tip, x, z, w, d));   // imena samodejna
   return { predloga:k, sobe, skupno:{ ...p.skupno } };
+}
+// stare povezave hranijo slovenska samodejna imena (»Spalnica 2«, »Kopalnica (1. nadstropje)«, »Nov prostor«)
+function lastnoIme(tip, ime) {
+  const osnova = ime.replace(/ (\d+|\(\d+\. nadstropje\))$/, '');
+  return osnova === I18N.sl.tip[tip] || ime === 'Nov prostor' ? '' : ime;
 }
 
 // zapis v povezavo: kompaktno, base64url
@@ -321,7 +687,7 @@ function odkodiraj(h) {
     nid = 1;
     const sobe = o.s.filter(r => TIPI[r[0]]).map(r => {
       const num = (v, a, b, d) => { v = +v; return isFinite(v) ? Math.max(a, Math.min(b, v)) : d; };
-      const s = novaSoba(r[0], num(r[2], -50, 50, 0), num(r[3], -50, 50, 0), num(r[4], 1, 40, 3), num(r[5], 1, 40, 3), String(r[1]).slice(0, 40), Math.max(0, Math.min(MAX_ETAZ - 1, r[7] | 0)));
+      const s = novaSoba(r[0], num(r[2], -50, 50, 0), num(r[3], -50, 50, 0), num(r[4], 1, 40, 3), num(r[5], 1, 40, 3), lastnoIme(r[0], String(r[1] ?? '').slice(0, 40)), Math.max(0, Math.min(MAX_ETAZ - 1, r[7] | 0)));
       SOBNE.forEach((k, i) => s.n[k] = Math.max(0, Math.min(20, r[6][i] | 0))); return s;
     });
     const skupno = {}; SKUPNE.forEach((k, i) => skupno[k] = Math.max(0, Math.min(10, o.g[i] | 0)));
@@ -352,10 +718,15 @@ function izracun(s) {
   return { kol, opremaR, material, nabava, opremaSk, ure, delo, moduli, elektro, brez, ddv, z:brez + ddv,
     povrsina: s.sobe.filter(r => r.tip !== 'terasa').reduce((a, r) => a + r.w * r.d, 0) };
 }
-const f0 = n => new Intl.NumberFormat('sl-SI', { maximumFractionDigits:0, useGrouping:'always' }).format(n) + ' €';
-const f2 = n => new Intl.NumberFormat('sl-SI', { minimumFractionDigits:2, maximumFractionDigits:2, useGrouping:'always' }).format(n) + ' €';
-const prostorov = n => n + ' ' + (n % 100 === 1 ? 'prostor' : n % 100 === 2 ? 'prostora' : (n % 100 === 3 || n % 100 === 4) ? 'prostori' : 'prostorov');
-const m2 = n => new Intl.NumberFormat('sl-SI', { maximumFractionDigits:1 }).format(n);
+// valuta po pravilih jezika (»3.740 €«, »€3,740«); presledek pred € je navaden, kot doslej
+const evro = (n, dec) => new Intl.NumberFormat(I18N[jezik].loc, { style:'currency', currency:'EUR', minimumFractionDigits:dec, maximumFractionDigits:dec, useGrouping:'always' })
+  .format(n).replace(/[  ]€/, ' €');
+const f0 = n => evro(n, 0);
+const f2 = n => evro(n, 2);
+const prostorov = n => t('prostorov', n);
+const m2 = n => new Intl.NumberFormat(I18N[jezik].loc, { maximumFractionDigits:1, useGrouping:'always' }).format(n);
+const fDatum = d => jezik === 'sl' ? `${d.getDate()}. ${d.getMonth() + 1}. ${d.getFullYear()}`
+  : new Intl.DateTimeFormat(I18N[jezik].loc, { day:'numeric', month:'long', year:'numeric' }).format(d);
 
 // ================= simboli =================
 const C = '#B4612E';
@@ -593,7 +964,7 @@ function zgradi() {
         zid(r.x, r.z + T, r.x + T, r.z + r.d - T); zid(r.x + r.w - T, r.z + T, r.x + r.w, r.z + r.d - T);
       }
       pohistvo(fg, r);
-      const lab = nalepka(r.ime); lab.position.set(r.x + r.w / 2, .2, r.z + r.d - .45); ofg.add(lab);
+      const lab = nalepka(imeSobe(r)); lab.position.set(r.x + r.w / 2, .2, r.z + r.d - .45); ofg.add(lab);
     }
     if (etaze > 1) { const el = nalepka(imeEtaze(e)); el.scale.multiplyScalar(1.35); el.center.set(0, .5); el.position.set(bx0 + .4, H + .5, bz0); ofg.add(el); }
     const tocke = [];
@@ -636,7 +1007,7 @@ function risiEtaze() {
   const n = steviloEtaz();
   etazeEl.hidden = n < 2;
   if (n < 2) return;
-  etazeEl.innerHTML = [['vse', 'Vse etaže'], ...[...Array(n).keys()].map(e => [e, imeEtaze(e)])]
+  etazeEl.innerHTML = [['vse', t('vseEtaze')], ...[...Array(n).keys()].map(e => [e, imeEtaze(e)])]
     .map(([k, l]) => `<button data-etaza="${k}" aria-pressed="${String(pogledEtaza) === String(k)}">${l}</button>`).join('');
 }
 etazeEl.addEventListener('click', e => {
@@ -682,67 +1053,67 @@ function prekrivanja() {
 }
 function zavihekTloris() {
   const iz = izracun(st), prek = prekrivanja();
-  return `<h2>Izberite izhodišče</h2>
+  return `<h2>${t('izhodisce')}</h2>
   <div class="predloge">${Object.entries(PREDLOGE).map(([k, p]) => {
     const pov = p.sobe.filter(s => s[0] !== 'terasa').reduce((a, s) => a + s[3] * s[4], 0);
-    return `<button data-predloga="${k}" aria-pressed="${st.predloga === k}"><b>${p.ime}</b><span>približno ${Math.round(pov)} m², ${prostorov(p.sobe.length)}</span></button>`; }).join('')}</div>
-  <h2>Nadstropja</h2>
-  <div class="etazni">${[...Array(steviloEtaz()).keys()].map(e => `<div class="etazna"><span><b>${imeEtaze(e)}</b> ${prostorov(st.sobe.filter(r => r.e === e).length)}</span>${e > 0 && e === steviloEtaz() - 1 ? `<button class="brisi-etazo" data-brisi-etazo="${e}">Odstrani</button>` : ''}</div>`).join('')}</div>
-  ${steviloEtaz() < MAX_ETAZ ? '<button class="dodaj" id="dodaj-etazo">Dodaj nadstropje</button>' : ''}
-  <h2>Prostori</h2>
-  <p class="opis">Mere so v metrih. Položaj določa levi zgornji kot prostora na tlorisu.</p>
+    return `<button data-predloga="${k}" aria-pressed="${st.predloga === k}"><b>${imePredloge(k)}</b><span>${t('priblizno', Math.round(pov), prostorov(p.sobe.length))}</span></button>`; }).join('')}</div>
+  <h2>${t('nadstropja')}</h2>
+  <div class="etazni">${[...Array(steviloEtaz()).keys()].map(e => `<div class="etazna"><span><b>${imeEtaze(e)}</b> ${prostorov(st.sobe.filter(r => r.e === e).length)}</span>${e > 0 && e === steviloEtaz() - 1 ? `<button class="brisi-etazo" data-brisi-etazo="${e}">${t('odstrani')}</button>` : ''}</div>`).join('')}</div>
+  ${steviloEtaz() < MAX_ETAZ ? `<button class="dodaj" id="dodaj-etazo">${t('dodajNadstropje')}</button>` : ''}
+  <h2>${t('prostori')}</h2>
+  <p class="opis">${t('mereOpis')}</p>
   ${st.sobe.slice().sort((a, b) => a.e - b.e).map((r, i, arr) => `${steviloEtaz() > 1 && (i === 0 || arr[i - 1].e !== r.e) ? `<h3 class="etaza-naslov">${imeEtaze(r.e)}</h3>` : ''}<div class="soba ${r.id === izbrana ? 'izbrana' : ''}" data-soba="${r.id}">
     <div class="vrsta1">
-      <input type="text" value="${esc(r.ime)}" data-polje="ime" aria-label="Ime prostora" maxlength="40">
-      <select data-polje="tip" aria-label="Vrsta prostora">${Object.entries(TIPI).map(([k, t]) => `<option value="${k}" ${k === r.tip ? 'selected' : ''}>${t.ime}</option>`).join('')}</select>
-      <button class="brisi" data-brisi="${r.id}" aria-label="Odstrani ${esc(r.ime)}">×</button>
+      <input type="text" value="${esc(imeSobe(r))}" data-polje="ime" aria-label="${t('imeProstora')}" maxlength="40">
+      <select data-polje="tip" aria-label="${t('vrstaProstora')}">${Object.keys(TIPI).map(k => `<option value="${k}" ${k === r.tip ? 'selected' : ''}>${imeTipa(k)}</option>`).join('')}</select>
+      <button class="brisi" data-brisi="${r.id}" aria-label="${t('odstraniSobo', esc(imeSobe(r)))}">×</button>
     </div>
     <div class="mere">
-      ${[['w', 'Širina'], ['d', 'Globina'], ['x', 'Levo'], ['z', 'Zgoraj']].map(([k, l]) =>
+      ${[['w', t('sirina')], ['d', t('globina')], ['x', t('levo')], ['z', t('zgoraj')]].map(([k, l]) =>
         `<label>${l}<input type="number" step="0.1" min="${k === 'w' || k === 'd' ? 1 : -50}" max="40" value="${r[k]}" data-polje="${k}"></label>`).join('')}
     </div>
-    ${steviloEtaz() > 1 ? `<label class="etaza-izbira">Etaža <select data-polje="e">${[...Array(steviloEtaz()).keys()].map(e => `<option value="${e}" ${e === r.e ? 'selected' : ''}>${imeEtaze(e)}</option>`).join('')}</select></label>` : ''}
-    ${prek.has(r.id) ? '<div class="opozorilo">Prostor se prekriva z drugim. Premaknite ga ali zmanjšajte.</div>' : ''}
+    ${steviloEtaz() > 1 ? `<label class="etaza-izbira">${t('etaza')} <select data-polje="e">${[...Array(steviloEtaz()).keys()].map(e => `<option value="${e}" ${e === r.e ? 'selected' : ''}>${imeEtaze(e)}</option>`).join('')}</select></label>` : ''}
+    ${prek.has(r.id) ? `<div class="opozorilo">${t('prekrivanje')}</div>` : ''}
   </div>`).join('')}
-  <button class="dodaj" id="dodaj">Dodaj prostor</button>
-  <div class="povrsina">Skupaj ${m2(iz.povrsina)} m² notranjih prostorov.</div>`;
+  <button class="dodaj" id="dodaj">${t('dodajProstor')}</button>
+  <div class="povrsina">${t('povrsina', m2(iz.povrsina))}</div>`;
 }
 function stevec(kljuc, v, oznaka) {
   const o = esc(oznaka);
-  return `<div class="stevec"><button data-minus="${kljuc}" aria-label="Manj: ${o}">−</button><output>${v}</output><button data-plus="${kljuc}" aria-label="Več: ${o}">+</button></div>`;
+  return `<div class="stevec"><button data-minus="${kljuc}" aria-label="${t('manj', o)}">−</button><output>${v}</output><button data-plus="${kljuc}" aria-label="${t('vec', o)}">+</button></div>`;
 }
 function zavihekNaprave() {
-  return `<p class="opis">Predlagali smo naprave glede na vrsto prostora. Število prilagodite po želji.</p>
+  return `<p class="opis">${t('napraveOpis')}</p>
   ${st.sobe.slice().sort((a, b) => a.e - b.e).map((r, i, arr) => `${steviloEtaz() > 1 && (i === 0 || arr[i - 1].e !== r.e) ? `<h2>${imeEtaze(r.e)}</h2>` : ''}<div class="skupina ${r.id === izbrana ? 'izbrana' : ''}" data-soba="${r.id}">
-    <h3>${esc(r.ime)} <span>${m2(r.w * r.d)} m²</span></h3>
-    ${SOBNE.map(k => `<div class="naprava">${ikona(k)}<div class="ime">${KAT[k].ime}<small>${KAT[k].opis}</small></div>${stevec(r.id + ':' + k, r.n[k], KAT[k].ime + ', ' + r.ime)}</div>`).join('')}
+    <h3>${esc(imeSobe(r))} <span>${m2(r.w * r.d)} m²</span></h3>
+    ${SOBNE.map(k => `<div class="naprava">${ikona(k)}<div class="ime">${imeNap(k)}<small>${opisNap(k)}</small></div>${stevec(r.id + ':' + k, r.n[k], imeNap(k) + ', ' + imeSobe(r))}</div>`).join('')}
   </div>`).join('')}
-  <div class="skupina"><h3>Za ves dom</h3>
-    <div class="naprava">${ikona('enota')}<div class="ime">Krmilna enota<small>Home Assistant Green z Zigbee in Bluetooth</small></div><div class="stevec"><output style="padding:0 10px">1</output></div></div>
-    ${SKUPNE.map(k => `<div class="naprava">${ikona(k)}<div class="ime">${KAT[k].ime}<small>${KAT[k].opis}</small></div>${stevec('g:' + k, st.skupno[k], KAT[k].ime)}</div>`).join('')}
+  <div class="skupina"><h3>${t('zaVesDom')}</h3>
+    <div class="naprava">${ikona('enota')}<div class="ime">${t('enota')}<small>${t('enotaOpis')}</small></div><div class="stevec"><output style="padding:0 10px">1</output></div></div>
+    ${SKUPNE.map(k => `<div class="naprava">${ikona(k)}<div class="ime">${imeNap(k)}<small>${opisNap(k)}</small></div>${stevec('g:' + k, st.skupno[k], imeNap(k))}</div>`).join('')}
   </div>`;
 }
 function vrsticeOpreme(iz) {
-  const v = [['Krmilna enota (Home Assistant Green, Zigbee, Bluetooth)', 1, ENOTA]];
-  for (const [k, d] of Object.entries(KAT)) if (iz.kol[k]) v.push([`${d.ime} (${d.opis})`, iz.kol[k], d.cena]);
+  const v = [[t('enotaVrstica'), 1, ENOTA]];
+  for (const [k, d] of Object.entries(KAT)) if (iz.kol[k]) v.push([`${imeNap(k)} (${opisNap(k)})`, iz.kol[k], d.cena]);
   return v;
 }
 function zavihekCena() {
   const iz = izracun(st);
-  return `<p class="opis">Informativni izračun. Končno ponudbo pripravimo po ogledu doma.</p>
+  return `<p class="opis">${t('cenaOpis')}</p>
   <table class="cene">
     ${vrsticeOpreme(iz).map(([i, n, c]) => `<tr><td>${esc(i)} <small>× ${n}</small></td><td class="n">${f0(n * c)}</td></tr>`).join('')}
-    <tr><td>Drobni material</td><td class="n">${f0(iz.material)}</td></tr>
-    <tr><td>Nabava in garancija <small>(15 %)</small></td><td class="n">${f0(iz.nabava)}</td></tr>
-    <tr class="vsota"><td>Oprema skupaj</td><td class="n">${f0(iz.opremaSk)}</td></tr>
-    <tr><td>Delo <small>${m2(iz.ure)} h × ${URNA} €</small></td><td class="n">${f0(iz.delo)}</td></tr>
-    <tr><td>Elektroinštalacijska dela <small>${iz.moduli} modulov</small></td><td class="n">${f0(iz.elektro)}</td></tr>
-    <tr class="vsota"><td>Skupaj brez DDV</td><td class="n">${f0(iz.brez)}</td></tr>
-    <tr><td>DDV 22 %</td><td class="n">${f2(iz.ddv)}</td></tr>
-    <tr class="vsota"><td>Skupaj z DDV</td><td class="n">${f2(iz.z)}</td></tr>
+    <tr><td>${t('material')}</td><td class="n">${f0(iz.material)}</td></tr>
+    <tr><td>${t('nabava')} <small>${t('nabavaPct')}</small></td><td class="n">${f0(iz.nabava)}</td></tr>
+    <tr class="vsota"><td>${t('opremaSkupaj')}</td><td class="n">${f0(iz.opremaSk)}</td></tr>
+    <tr><td>${t('delo')} <small>${m2(iz.ure)} h × ${f0(URNA)}</small></td><td class="n">${f0(iz.delo)}</td></tr>
+    <tr><td>${t('elektro')} <small>${t('moduli', iz.moduli)}</small></td><td class="n">${f0(iz.elektro)}</td></tr>
+    <tr class="vsota"><td>${t('skupajBrez')}</td><td class="n">${f0(iz.brez)}</td></tr>
+    <tr><td>${t('ddvStopnja')}</td><td class="n">${f2(iz.ddv)}</td></tr>
+    <tr class="vsota"><td>${t('skupajZ')}</td><td class="n">${f2(iz.z)}</td></tr>
   </table>
-  <p class="opis" style="margin-top:12px">Vzdrževanje po želji: 19 € na mesec (23,18 € z DDV).</p>
-  <p class="opis">MM projekti, s.p. ni davčni zavezanec za DDV.</p>`;
+  <p class="opis" style="margin-top:12px">${t('vzdrzevanje', f0(19), f2(23.18))}</p>
+  <p class="opis">${t('niZavezanec')}</p>`;
 }
 
 function osvezi({ brez3d = false } = {}) {
@@ -752,7 +1123,7 @@ function osvezi({ brez3d = false } = {}) {
   if (fid && fp) { const el = vs.querySelector(`[data-soba="${fid}"] [data-polje="${fp}"]`); if (el) { el.focus(); } }
   const iz = izracun(st);
   document.getElementById('z-ddv').textContent = f2(iz.z);
-  document.getElementById('z-brez').innerHTML = `${f0(iz.brez)} brez DDV<br>z DDV 22 %`;
+  document.getElementById('z-brez').innerHTML = `${f0(iz.brez)} ${t('brezDdv')}<br>${t('zDdv22')}`;
   history.replaceState(null, '', '#' + zakodiraj(st));
   if (!brez3d) zgradi();
 }
@@ -763,26 +1134,27 @@ document.querySelectorAll('nav.zavihki button').forEach(b => b.addEventListener(
   osvezi({ brez3d:true }); vs.scrollTop = 0;
 }));
 vs.addEventListener('click', e => {
-  const t = e.target.closest('button'); if (!t) return;
-  if (t.dataset.predloga) { st = izPredloge(t.dataset.predloga); izbrana = null; prviOkvir = true; osvezi(); return; }
-  if (t.dataset.brisi) { const r = st.sobe.find(x => x.id === +t.dataset.brisi);
+  const g = e.target.closest('button'); if (!g) return;
+  if (g.dataset.predloga) { st = izPredloge(g.dataset.predloga); izbrana = null; prviOkvir = true; osvezi(); return; }
+  if (g.dataset.brisi) { const r = st.sobe.find(x => x.id === +g.dataset.brisi);
     if (st.sobe.filter(x => x.e === 0).length > 1 || (r && r.e > 0)) {
-      st.sobe = st.sobe.filter(x => x.id !== +t.dataset.brisi);
+      const imeOdstranjene = imeSobe(r);   // pred brisanjem, ker se samodejne številke nato spremenijo
+      st.sobe = st.sobe.filter(x => x.id !== +g.dataset.brisi);
       st.sobe.forEach(x => { while (x.e > 0 && !st.sobe.some(y => y.e === x.e - 1)) x.e--; });
       const ods = r ? pocistiSkupne(r.tip) : [];
       if (izbrana === r.id) izbrana = null;
-      sporocilo(`Prostor ${r.ime} je odstranjen skupaj z napravami${ods.length ? ', tudi: ' + ods.join(', ') : ''}.`);
-    } else sporocilo('Dom mora imeti vsaj en prostor v pritličju.');
+      sporocilo(t('odstranjen', imeOdstranjene, ods.join(', ')));
+    } else sporocilo(t('vsajEn'));
     st.predloga = null; osvezi(); return; }
-  if (t.id === 'dodaj-etazo') { dodajNadstropje(); osvezi(); return; }
-  if (t.dataset.brisiEtazo) { const e = +t.dataset.brisiEtazo; st.sobe = st.sobe.filter(r => r.e !== e); pogledEtaza = 'vse'; prviOkvir = true; st.predloga = null; osvezi(); return; }
-  if (t.id === 'dodaj') {
+  if (g.id === 'dodaj-etazo') { dodajNadstropje(); osvezi(); return; }
+  if (g.dataset.brisiEtazo) { const e = +g.dataset.brisiEtazo; st.sobe = st.sobe.filter(r => r.e !== e); pogledEtaza = 'vse'; prviOkvir = true; st.predloga = null; osvezi(); return; }
+  if (g.id === 'dodaj') {
     const e = pogledEtaza === 'vse' ? 0 : pogledEtaza, na = st.sobe.filter(r => r.e === e);
     const x1 = Math.max(...na.map(r => r.x + r.w)), z0 = Math.min(...na.map(r => r.z));
-    const r = novaSoba('spalnica', x1, z0, 3.5, 3.5, 'Nov prostor', e); st.sobe.push(r); izbrana = r.id; st.predloga = null; osvezi(); return;
+    const r = novaSoba('spalnica', x1, z0, 3.5, 3.5, '', e); st.sobe.push(r); izbrana = r.id; st.predloga = null; osvezi(); return;
   }
-  const k = t.dataset.plus || t.dataset.minus; if (!k) return;
-  const d = t.dataset.plus ? 1 : -1, [a, b] = k.split(':');
+  const k = g.dataset.plus || g.dataset.minus; if (!k) return;
+  const d = g.dataset.plus ? 1 : -1, [a, b] = k.split(':');
   if (a === 'g') st.skupno[b] = Math.max(0, Math.min(10, st.skupno[b] + d));
   else { const r = st.sobe.find(x => x.id === +a); r.n[b] = Math.max(0, Math.min(20, r.n[b] + d)); }
   osvezi();
@@ -790,10 +1162,11 @@ vs.addEventListener('click', e => {
 vs.addEventListener('change', e => {
   const el = e.target, s = el.closest('[data-soba]'); if (!s || !el.dataset.polje) return;
   const r = st.sobe.find(x => x.id === +s.dataset.soba), p = el.dataset.polje;
-  if (p === 'ime') r.ime = el.value.slice(0, 40) || TIPI[r.tip].ime;
+  if (p === 'ime') {   // prazno ali enako samodejnemu imenu = samodejno ime
+    const v = el.value.trim().slice(0, 40); r.ime = ''; r.ime = v === samodejnoIme(r) ? '' : v; }
   else if (p === 'e') { r.e = Math.max(0, Math.min(MAX_ETAZ - 1, +el.value | 0)); }
-  else if (p === 'tip') { const staro = TIPI[r.tip].ime, stariTip = r.tip; r.tip = el.value; r.n = { ...TIPI[r.tip].def }; if (r.ime.startsWith(staro) || r.ime === 'Nov prostor') r.ime = TIPI[r.tip].ime;
-    const ods = pocistiSkupne(stariTip); if (ods.length) sporocilo(`Odstranjeno, ker ni več prostora vrste ${staro.toLowerCase()}: ${ods.join(', ')}.`); }
+  else if (p === 'tip') { const staro = imeTipa(r.tip), stariTip = r.tip; r.tip = el.value; r.n = { ...TIPI[r.tip].def }; if (r.ime.startsWith(staro)) r.ime = '';
+    const ods = pocistiSkupne(stariTip); if (ods.length) sporocilo(t('odstranjenoTip', malo(staro), ods.join(', '))); }
   else { let v = parseFloat(String(el.value).replace(',', '.')); if (!isFinite(v)) return;
     v = Math.round(v * 100) / 100; if (p === 'w' || p === 'd') v = Math.max(1, Math.min(40, v)); else v = Math.max(-50, Math.min(50, v)); r[p] = v; }
   st.predloga = null; izbrana = r.id; osvezi();
@@ -802,8 +1175,30 @@ vs.addEventListener('focusin', e => { const s = e.target.closest('[data-soba]');
 
 document.getElementById('g-povezava').addEventListener('click', async () => {
   const url = location.href;
-  try { await navigator.clipboard.writeText(url); sporocilo('Povezava je kopirana. Z njo kadar koli odprete to izbiro.'); }
-  catch { prompt('Kopirajte povezavo:', url); }
+  try { await navigator.clipboard.writeText(url); sporocilo(t('kopirano')); }
+  catch { prompt(t('kopirajte'), url); }
+});
+
+// ================= izbira jezika =================
+const jezikiEl = document.getElementById('jeziki');
+function posodobiJezik() {
+  document.documentElement.lang = jezik;
+  document.title = t('naslovStrani');
+  document.querySelector('meta[name="description"]').setAttribute('content', t('opisStrani'));
+  document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => el.setAttribute('aria-label', t(el.dataset.i18nAria)));
+  jezikiEl.setAttribute('aria-label', t('jezik'));
+  jezikiEl.innerHTML = JEZIKI.map(j => `<button type="button" data-jezik="${j}" lang="${j}" aria-pressed="${j === jezik}" aria-label="${I18N[j].ime}" title="${I18N[j].ime}">${j.toUpperCase()}</button>`).join('');
+}
+jezikiEl.addEventListener('click', e => {
+  const b = e.target.closest('button[data-jezik]'); if (!b || b.dataset.jezik === jezik) return;
+  jezik = b.dataset.jezik;
+  try { localStorage.setItem(JEZIK_KLJUC, jezik); } catch {}
+  const u = new URL(location.href);   // če povezava že nosi ?lang, ga uskladimo; jezik ne gre v #hash
+  if (u.searchParams.has('lang')) { u.searchParams.set('lang', jezik); history.replaceState(null, '', u); }
+  posodobiJezik();
+  osvezi();   // panel in 3D z novimi imeni
+  const nb = jezikiEl.querySelector(`[data-jezik="${jezik}"]`); if (nb) nb.focus();
 });
 
 // ================= ponudba v PDF =================
@@ -834,50 +1229,45 @@ function sestaviPonudbo() {
   renderer.autoClear = true; renderer.render(scene, cam); renderer.autoClear = false; renderer.clearDepth(); renderer.render(overlay, cam);
   const slika = obrezi(renderer.domElement);
   const iz = izracun(st), dan = new Date();
-  const datum = `${dan.getDate()}. ${dan.getMonth() + 1}. ${dan.getFullYear()}`;
+  const datum = fDatum(dan);
   const veljavnost = new Date(dan.getTime() + 30 * 864e5);
   const st_pon = `K-${dan.getFullYear()}${String(dan.getMonth() + 1).padStart(2, '0')}${String(dan.getDate()).padStart(2, '0')}-${zakodiraj(st).slice(-5)}`;
   document.getElementById('ponudba').innerHTML = `
   <div class="gl"><div class="zn">${LOGO} MM projekti, s.p.</div><div>Kardeljeva cesta 98, 2000 Maribor &nbsp; +386 41 891 030 &nbsp; matej.moharic@gmail.com</div></div>
-  <h1>Informativna ponudba<br>za pametni dom</h1>
-  <p class="podnaslov">Pripravljeno s konfiguratorjem na spletni strani MM projekti. Končno ponudbo potrdimo po ogledu doma.</p>
-  <div class="meta"><div><span>Številka</span><b>${st_pon}</b></div><div><span>Datum</span><b>${datum}</b></div>
-    <div><span>Naročnik</span><div class="crta"></div></div><div><span>Objekt</span><b>${m2(iz.povrsina)} m², ${prostorov(st.sobe.length)}${steviloEtaz() > 1 ? ', ' + etazStr(steviloEtaz()) : ''}</b></div></div>
-  <img class="slika" src="${slika}" alt="3D prikaz doma z napravami">
-  <h2>Oprema po prostorih</h2>
-  <table><thead><tr><th>Prostor</th><th>Naprave</th></tr></thead><tbody>
-    ${st.sobe.slice().sort((a, b) => a.e - b.e).map((r, i, arr) => `${steviloEtaz() > 1 && (i === 0 || arr[i - 1].e !== r.e) ? `<tr><td colspan="2" style="font-weight:600;color:#1E4634;padding-top:2mm">${imeEtaze(r.e)}</td></tr>` : ''}<tr><td>${esc(r.ime)} <span style="color:#5F6B64">${m2(r.w * r.d)} m²</span></td><td>${SOBNE.filter(k => r.n[k]).map(k => `${r.n[k]} × ${KAT[k].ime.toLowerCase()}`).join(', ') || '–'}</td></tr>`).join('')}
+  <h1>${t('ponNaslov')}</h1>
+  <p class="podnaslov">${t('ponPodnaslov')}</p>
+  <div class="meta"><div><span>${t('stevilka')}</span><b>${st_pon}</b></div><div><span>${t('datum')}</span><b>${datum}</b></div>
+    <div><span>${t('narocnik')}</span><div class="crta"></div></div><div><span>${t('objekt')}</span><b>${m2(iz.povrsina)} m², ${prostorov(st.sobe.length)}${steviloEtaz() > 1 ? ', ' + etazStr(steviloEtaz()) : ''}</b></div></div>
+  <img class="slika" src="${slika}" alt="${t('slikaAlt')}">
+  <h2>${t('opremaPoProstorih')}</h2>
+  <table><thead><tr><th>${t('prostor')}</th><th>${t('naprave')}</th></tr></thead><tbody>
+    ${st.sobe.slice().sort((a, b) => a.e - b.e).map((r, i, arr) => `${steviloEtaz() > 1 && (i === 0 || arr[i - 1].e !== r.e) ? `<tr><td colspan="2" style="font-weight:600;color:#1E4634;padding-top:2mm">${imeEtaze(r.e)}</td></tr>` : ''}<tr><td>${esc(imeSobe(r))} <span style="color:#5F6B64">${m2(r.w * r.d)} m²</span></td><td>${SOBNE.filter(k => r.n[k]).map(k => `${r.n[k]} × ${malo(imeNap(k))}`).join(', ') || '–'}</td></tr>`).join('')}
   </tbody></table>
-  <h2>Razdelitev cene</h2>
-  <table><thead><tr><th>Postavka</th><th class="n">Količina</th><th class="n">Cena</th><th class="n">Znesek</th></tr></thead><tbody>
+  <h2>${t('razdelitev')}</h2>
+  <table><thead><tr><th>${t('postavka')}</th><th class="n">${t('kolicina')}</th><th class="n">${t('cena')}</th><th class="n">${t('znesek')}</th></tr></thead><tbody>
     ${vrsticeOpreme(iz).map(([i, n, c]) => `<tr><td>${esc(i)}</td><td class="n">${n}</td><td class="n">${f2(c)}</td><td class="n">${f0(n * c)}</td></tr>`).join('')}
-    <tr><td>Drobni material</td><td></td><td></td><td class="n">${f0(iz.material)}</td></tr>
-    <tr><td>Nabava in garancija (naročanje, preizkus pred montažo, reklamacije), 15 %</td><td></td><td></td><td class="n">${f0(iz.nabava)}</td></tr>
-    <tr class="vs"><td>Oprema skupaj</td><td></td><td></td><td class="n">${f0(iz.opremaSk)}</td></tr>
-    <tr><td>Delo: ogled, priprava, montaža, povezovanje, avtomatizacije, tablica, predaja</td><td class="n">${m2(iz.ure)} h</td><td class="n">${f2(URNA)}</td><td class="n">${f0(iz.delo)}</td></tr>
-    <tr><td>Elektroinštalacijska dela (pooblaščeni elektroinštalater)</td><td class="n">${iz.moduli}</td><td class="n">${f2(ELEKTRO_MODUL)}</td><td class="n">${f0(iz.elektro)}</td></tr>
+    <tr><td>${t('material')}</td><td></td><td></td><td class="n">${f0(iz.material)}</td></tr>
+    <tr><td>${t('nabavaDolgo')}</td><td></td><td></td><td class="n">${f0(iz.nabava)}</td></tr>
+    <tr class="vs"><td>${t('opremaSkupaj')}</td><td></td><td></td><td class="n">${f0(iz.opremaSk)}</td></tr>
+    <tr><td>${t('deloDolgo')}</td><td class="n">${m2(iz.ure)} h</td><td class="n">${f2(URNA)}</td><td class="n">${f0(iz.delo)}</td></tr>
+    <tr><td>${t('elektroDolgo')}</td><td class="n">${iz.moduli}</td><td class="n">${f2(ELEKTRO_MODUL)}</td><td class="n">${f0(iz.elektro)}</td></tr>
   </tbody></table>
-  <div class="skupaj"><div class="v"><span>Oprema z nabavo in garancijo</span>${f0(iz.opremaSk)}<br><span>Delo</span>${f0(iz.delo)}<br><span>Elektroinštalacijska dela</span>${f0(iz.elektro)}<br><span>Skupaj brez DDV</span>${f0(iz.brez)}<br><span>DDV 22 %</span>${f2(iz.ddv)}</div>
-    <div><b>${f2(iz.z)}</b><small>skupaj z DDV</small></div></div>
-  <h2>Pogoji</h2>
+  <div class="skupaj"><div class="v"><span>${t('opremaZNabavo')}</span>${f0(iz.opremaSk)}<br><span>${t('delo')}</span>${f0(iz.delo)}<br><span>${t('elektro')}</span>${f0(iz.elektro)}<br><span>${t('skupajBrez')}</span>${f0(iz.brez)}<br><span>${t('ddvStopnja')}</span>${f2(iz.ddv)}</div>
+    <div><b>${f2(iz.z)}</b><small>${t('skupajZMalo')}</small></div></div>
+  <h2>${t('pogoji')}</h2>
   <ul>
-    <li>Informativna ponudba velja do ${veljavnost.getDate()}. ${veljavnost.getMonth() + 1}. ${veljavnost.getFullYear()}. Obseg in količine potrdimo po ogledu.</li>
-    <li>Cene opreme se ob naročilu uskladijo s cenami dobaviteljev.</li>
-    <li>Plačilo: 50 % ob naročilu, 50 % ob predaji sistema. Rok izvedbe 2 do 4 tedne.</li>
-    <li>Garancija za opremo po pogojih proizvajalca, za izvedena dela 12 mesecev.</li>
-    <li>Vzdrževanje po želji: 19 € na mesec (23,18 € z DDV) ali 199 € na leto.</li>
-    <li>Potni stroški izven Maribora: 0,43 € na kilometer.</li>
-    <li>MM projekti, s.p. ni davčni zavezanec za DDV.</li>
+    ${t('pogojiSez', fDatum(veljavnost)).map(p => `<li>${p}</li>`).join('\n    ')}
   </ul>
-  <div class="pod"><div><b>Ponudnik</b>Matej Moharič, MM projekti, s.p.</div><div><b>Potrditev naročnika</b>datum in podpis</div></div>`;
+  <div class="pod"><div><b>${t('ponudnik')}</b>Matej Moharič, MM projekti, s.p.</div><div><b>${t('potrditev')}</b>${t('datumPodpis')}</div></div>`;
 }
 document.getElementById('g-pdf').addEventListener('click', () => {
   sestaviPonudbo();
-  sporocilo('V oknu za tiskanje izberite »Shrani kot PDF«.');
+  sporocilo(t('shraniPdf'));
   setTimeout(() => window.print(), 300);
 });
 window.__ponudba = sestaviPonudbo;   // za samodejni preizkus
 
+posodobiJezik();
 velikost();
 osvezi();
 </script>

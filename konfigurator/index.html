@@ -24,60 +24,60 @@
   .app { display:grid; grid-template-columns:1fr 400px; height:100vh; }
   #pogled { position:relative; min-width:0; }
   #pogled canvas { display:block; width:100%; height:100%; }
-  .namig { position:absolute; left:16px; bottom:14px; font-size:13px; color:var(--soft); background:rgba(255,255,255,.8); padding:4px 10px; border-radius:6px; }
-  .znak { position:absolute; left:16px; top:14px; display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--pine); font-weight:600; background:rgba(255,255,255,.85); padding:6px 12px 6px 6px; border-radius:10px; }
+  .namig { position:absolute; left:16px; bottom:16px; font-size:13px; color:var(--soft); background:rgba(255,255,255,.8); padding:4px 8px; border-radius:8px; }
+  .znak { position:absolute; left:16px; top:16px; display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--pine); font-weight:500; background:rgba(255,255,255,.85); padding:6px 12px 6px 6px; border-radius:12px; }
   .znak svg { width:30px; height:30px; }
-  .etaze { position:absolute; top:14px; left:50%; transform:translateX(-50%); display:flex; gap:4px; background:rgba(255,255,255,.92); padding:4px; border-radius:10px; box-shadow:0 1px 3px rgba(20,32,26,.08); }
+  .etaze { position:absolute; top:16px; left:50%; transform:translateX(-50%); display:flex; gap:4px; background:rgba(255,255,255,.92); padding:4px; border-radius:12px; box-shadow:0 1px 3px rgba(20,32,26,.08); }
   .etaze[hidden] { display:none; }
-  .etaze button { border:0; background:none; padding:6px 12px; border-radius:7px; color:var(--soft); font-weight:500; font-size:13.5px; white-space:nowrap; }
+  .etaze button { border:0; background:none; padding:6px 12px; border-radius:8px; color:var(--soft); font-weight:500; font-size:13.5px; white-space:nowrap; }
   .etaze button[aria-pressed="true"] { background:var(--pine); color:#fff; }
 
   .panel { background:var(--paper); border-left:1px solid var(--rule); display:flex; flex-direction:column; min-height:0; }
-  .panel header { padding:18px 20px 0; }
-  .panel h1 { font-size:21px; line-height:1.15; margin:0 0 4px; color:var(--pine); font-weight:600; letter-spacing:-.01em; }
-  .panel header p { margin:0 0 14px; color:var(--soft); font-size:13.5px; }
-  .glava { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+  .panel header { padding:20px 20px 0; }
+  .panel h1 { font-size:21px; line-height:1.15; margin:0 0 4px; color:var(--pine); font-weight:500; }
+  .panel header p { margin:0 0 16px; color:var(--soft); font-size:13.5px; }
+  .glava { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
   .glava h1 { min-width:0; }
   .jeziki { display:flex; gap:2px; flex:none; }
-  .jeziki button { border:0; background:none; padding:4px 5px; border-radius:6px; color:var(--soft); font-family:var(--sans); font-size:11.5px; font-weight:600; letter-spacing:.03em; line-height:1.2; }
+  .jeziki button { border:0; background:none; padding:4px; border-radius:6px; color:var(--soft); font-family:var(--sans); font-size:11.5px; font-weight:500; letter-spacing:.03em; line-height:1.2; }
   .jeziki button:hover { color:var(--pine); background:var(--tint); }
   .jeziki button[aria-pressed="true"] { background:var(--pine); color:#fff; }
   nav.zavihki { display:grid; grid-template-columns:repeat(3,1fr); border-bottom:1px solid var(--rule); padding:0 12px; }
-  nav.zavihki button { border:0; background:none; padding:10px 4px 11px; color:var(--soft); font-weight:500; border-bottom:2px solid transparent; margin-bottom:-1px; }
-  nav.zavihki button[aria-selected="true"] { color:var(--pine); border-bottom-color:var(--pine); font-weight:600; }
-  .vsebina { flex:1; overflow-y:auto; overflow-x:hidden; padding:16px 20px 24px; }
-  .vsebina h2 { font-size:15px; margin:18px 0 8px; color:var(--pine); font-weight:600; }
+  nav.zavihki button { border:0; background:none; padding:12px 4px; color:var(--soft); font-weight:500; border-bottom:2px solid transparent; margin-bottom:-1px; }
+  nav.zavihki button[aria-selected="true"] { color:var(--pine); border-bottom-color:var(--pine); }
+  .vsebina { flex:1; overflow-y:auto; overflow-x:hidden; padding:16px 20px 24px; scrollbar-width:thin; scrollbar-color:var(--rule) transparent; }
+  .vsebina h2 { font-size:15px; margin:20px 0 8px; color:var(--pine); font-weight:500; }
   .vsebina h2:first-child { margin-top:0; }
-  .opis { color:var(--soft); font-size:13.5px; margin:0 0 10px; }
+  .opis { color:var(--soft); font-size:13.5px; margin:0 0 12px; }
 
   .predloge { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:8px; }
-  .predloge button { text-align:left; border:1px solid var(--rule); background:var(--paper); border-radius:10px; padding:10px 12px; }
-  .predloge button b { display:block; font-weight:600; overflow-wrap:anywhere; hyphens:auto; }
-  .predloge button span { font-size:12.5px; color:var(--soft); }
+  .predloge button { text-align:left; border:1px solid var(--rule); background:var(--paper); border-radius:12px; padding:12px; }
+  .predloge button b { display:block; font-weight:500; overflow-wrap:anywhere; hyphens:auto; }
+  .predloge button span { display:block; font-size:12.5px; color:var(--soft); font-variant-numeric:tabular-nums; }
   .predloge button[aria-pressed="true"] { border-color:var(--pine); background:var(--tint); }
 
-  .soba { border-top:1px solid var(--rule); padding:10px 0; }
-  .soba.izbrana { background:linear-gradient(90deg, var(--tint), transparent); margin:0 -20px; padding:10px 20px; }
+  .soba { border-top:1px solid var(--rule); padding:12px 0; }
+  .soba.izbrana { background:linear-gradient(90deg, var(--tint), transparent); margin:0 -20px; padding:12px 20px; }
   .soba .vrsta1 { display:grid; grid-template-columns:1fr 128px 30px; gap:8px; align-items:center; }
-  .soba input[type=text], .soba select, .mere input { border:1px solid var(--rule); border-radius:7px; padding:6px 8px; background:#fff; width:100%; }
-  .mere { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:7px; }
+  .soba input[type=text], .soba select, .mere input { border:1px solid var(--rule); border-radius:8px; padding:6px 8px; background:#fff; width:100%; }
+  .mere { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:8px; }
   .mere label { font-size:11.5px; color:var(--soft); }
   .mere input { padding:4px 6px; }
   .brisi { border:0; background:none; color:var(--soft); font-size:18px; line-height:1; padding:4px; border-radius:6px; }
   .brisi:hover { color:var(--clay); background:#F7EDE6; }
-  .etazni { display:grid; gap:6px; }
-  .etazna { display:flex; justify-content:space-between; align-items:center; border:1px solid var(--rule); border-radius:9px; padding:8px 12px; font-size:13.5px; color:var(--soft); }
-  .etazna b { color:var(--ink); font-weight:600; margin-right:6px; }
+  .etazni { display:grid; gap:8px; }
+  .etazna { display:flex; justify-content:space-between; align-items:center; border:1px solid var(--rule); border-radius:8px; padding:8px 12px; font-size:13.5px; color:var(--soft); }
+  .etazna b { color:var(--ink); font-weight:500; margin-right:8px; }
   .brisi-etazo { border:0; background:none; color:var(--clay); font-weight:500; font-size:13px; padding:2px 4px; }
-  .etaza-naslov { font-size:13px; color:var(--soft); font-weight:600; margin:14px 0 2px; }
-  .etaza-izbira { display:flex; align-items:center; gap:8px; margin-top:7px; font-size:12px; color:var(--soft); }
-  .etaza-izbira select { border:1px solid var(--rule); border-radius:7px; padding:4px 6px; background:#fff; }
-  .dodaj { margin-top:8px; width:100%; border:1px dashed var(--pine-2); color:var(--pine); background:none; border-radius:8px; padding:9px; font-weight:500; }
+  .etaza-naslov { font-size:13px; color:var(--soft); font-weight:500; margin:16px 0 4px; }
+  .etaza-izbira { display:flex; align-items:center; gap:8px; margin-top:8px; font-size:12px; color:var(--soft); }
+  .etaza-izbira select { border:1px solid var(--rule); border-radius:8px; padding:4px 6px; background:#fff; }
+  .dodaj { margin-top:8px; width:100%; border:1px dashed var(--pine-2); color:var(--pine); background:none; border-radius:8px; padding:8px; font-weight:500; }
   .povrsina { font-size:12.5px; color:var(--soft); margin-top:10px; }
   .opozorilo { color:var(--clay); font-size:12.5px; margin-top:4px; }
 
-  .skupina { border-top:1px solid var(--rule); padding:10px 0 4px; }
-  .skupina h3 { font-size:14px; margin:0 0 6px; font-weight:600; display:flex; justify-content:space-between; }
+  .skupina { border-top:1px solid var(--rule); padding:12px 0 4px; }
+  .skupina h3 { font-size:14px; margin:0 0 8px; font-weight:500; display:flex; justify-content:space-between; }
   .skupina h3 span { font-weight:400; color:var(--soft); font-size:12.5px; }
   .naprava { display:grid; grid-template-columns:24px 1fr auto; gap:8px; align-items:center; padding:4px 0; }
   .naprava svg { width:20px; height:20px; }
@@ -86,20 +86,20 @@
   .stevec { display:flex; align-items:center; border:1px solid var(--rule); border-radius:8px; overflow:hidden; }
   .stevec button { border:0; background:#fff; width:30px; height:28px; color:var(--pine); font-size:17px; }
   .stevec button:hover { background:var(--tint); }
-  .stevec output { min-width:26px; text-align:center; font-variant-numeric:tabular-nums; font-weight:600; }
+  .stevec output { min-width:26px; text-align:center; font-variant-numeric:tabular-nums; font-weight:500; }
 
   table.cene { width:100%; border-collapse:collapse; font-size:13.5px; }
-  table.cene td { padding:5px 0; border-bottom:1px solid var(--rule); vertical-align:top; }
+  table.cene td { padding:6px 0; border-bottom:1px solid var(--rule); vertical-align:top; }
   table.cene td.n { text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; padding-left:8px; }
-  table.cene tr.vsota td { font-weight:600; color:var(--pine); border-bottom:none; padding-top:8px; }
+  table.cene tr.vsota td { font-weight:500; color:var(--pine); border-bottom:none; padding-top:8px; }
   table.cene small { color:var(--soft); }
 
-  .noga { border-top:1px solid var(--rule); padding:14px 20px 16px; background:var(--paper); }
-  .noga .zneski { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; }
-  .noga .zneski b { font-size:26px; color:var(--pine); font-weight:600; letter-spacing:-.01em; font-variant-numeric:tabular-nums; }
+  .noga { border-top:1px solid var(--rule); padding:16px 20px; background:var(--paper); }
+  .noga .zneski { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px; }
+  .noga .zneski b { font-size:26px; color:var(--pine); font-weight:500; letter-spacing:-.01em; font-variant-numeric:tabular-nums; }
   .noga .zneski span { color:var(--soft); font-size:13px; text-align:right; }
   .gumbi { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-  .gumbi button { border-radius:9px; padding:10px; font-weight:600; border:1px solid var(--pine); }
+  .gumbi button { border-radius:8px; padding:12px; font-weight:500; border:1px solid var(--pine); }
   .gumbi .glavni { background:var(--pine); color:#fff; }
   .gumbi .drugi { background:#fff; color:var(--pine); }
   .sporocilo { font-size:12.5px; color:var(--pine-2); min-height:18px; margin-top:6px; }
@@ -107,7 +107,7 @@
   .kratko { display:none; }
   @media (max-width: 860px) {
     .etaze { top:auto; bottom:8px; }
-    .etaze button { padding:5px 9px; font-size:12.5px; }
+    .etaze button { padding:4px 8px; font-size:12.5px; }
     .app { grid-template-columns:1fr; grid-template-rows:minmax(190px, 34svh) minmax(0, 1fr); height:100dvh; }
     .panel { border-left:0; border-top:1px solid var(--rule); min-height:0; }
     .panel header { padding:10px 16px 0; }
@@ -122,10 +122,10 @@
     .znak svg { width:24px; height:24px; }
     .noga { display:grid; grid-template-columns:auto 1fr; gap:4px 12px; align-items:center; padding:8px 16px calc(8px + env(safe-area-inset-bottom)); }
     .noga .zneski { display:block; margin:0; }
-    .noga .zneski b { display:block; font-size:21px; line-height:1.1; }
+    .noga .zneski b { display:block; font-size:21px; line-height:1.1; letter-spacing:0; }
     .noga .zneski span { display:block; text-align:left; font-size:11.5px; line-height:1.3; }
     .gumbi { gap:6px; }
-    .gumbi button { padding:9px 6px; font-size:14px; }
+    .gumbi button { padding:8px 4px; font-size:13px; line-height:1.2; white-space:nowrap; }
     .dolgo { display:none; }
     .kratko { display:inline; }
     .sporocilo { grid-column:1 / -1; min-height:0; margin-top:0; }
@@ -206,8 +206,8 @@
     <div class="noga">
       <div class="zneski"><b id="z-ddv">0 €</b><span id="z-brez">brez DDV</span></div>
       <div class="gumbi">
-        <button class="drugi" id="g-povezava"><span class="dolgo" data-i18n="shraniPovezavo">Shrani povezavo</span><span class="kratko" data-i18n="povezavaKratko">Povezava</span></button>
-        <button class="glavni" id="g-pdf"><span class="dolgo" data-i18n="ponudbaPdf">Ponudba v PDF</span><span class="kratko" data-i18n="pdfKratko">PDF</span></button>
+        <button class="drugi" id="g-povezava"><span class="dolgo" data-i18n="shraniPovezavo">Shrani povezavo</span><span class="kratko" data-i18n="povezavaKratko">Shrani povezavo</span></button>
+        <button class="glavni" id="g-pdf"><span class="dolgo" data-i18n="ponudbaPdf">Ponudba v PDF</span><span class="kratko" data-i18n="pdfKratko">Ponudba PDF</span></button>
       </div>
       <div class="sporocilo" id="sporocilo" role="status" aria-live="polite"></div>
     </div>
@@ -287,9 +287,9 @@ const I18N = {
     namig:'Povlecite za vrtenje, kolešček za povečavo, klik na prostor ga izbere.',
     h1:'Konfigurator pametnega doma', uvod:'Izberite tloris, prilagodite prostore in naprave. Cena se preračuna sproti.',
     zTloris:'1. Tloris', zNaprave:'2. Naprave', zCena:'3. Cena', jezik:'Jezik',
-    shraniPovezavo:'Shrani povezavo', povezavaKratko:'Povezava', ponudbaPdf:'Ponudba v PDF', pdfKratko:'PDF',
+    shraniPovezavo:'Shrani povezavo', povezavaKratko:'Shrani povezavo', ponudbaPdf:'Ponudba v PDF', pdfKratko:'Ponudba PDF',
     brezDdv:'brez DDV', zDdv22:'z DDV 22 %',
-    izhodisce:'Izberite izhodišče', priblizno:(m, n) => `približno ${m} m², ${n}`,
+    izhodisce:'Izberite izhodišče',
     nadstropja:'Nadstropja', odstrani:'Odstrani', dodajNadstropje:'Dodaj nadstropje', prostori:'Prostori',
     mereOpis:'Mere so v metrih. Položaj določa levi zgornji kot prostora na tlorisu.',
     imeProstora:'Ime prostora', vrstaProstora:'Vrsta prostora', odstraniSobo:i => `Odstrani ${i}`,
@@ -353,9 +353,9 @@ const I18N = {
     namig:'Drag to rotate, scroll to zoom, click a room to select it.',
     h1:'Smart home configurator', uvod:'Pick a floor plan, then adjust the rooms and devices. The price updates as you go.',
     zTloris:'1. Floor plan', zNaprave:'2. Devices', zCena:'3. Price', jezik:'Language',
-    shraniPovezavo:'Save link', povezavaKratko:'Link', ponudbaPdf:'Quote as PDF', pdfKratko:'PDF',
+    shraniPovezavo:'Save link', povezavaKratko:'Save link', ponudbaPdf:'Quote as PDF', pdfKratko:'Quote PDF',
     brezDdv:'excl. VAT', zDdv22:'incl. 22% VAT',
-    izhodisce:'Choose a starting point', priblizno:(m, n) => `about ${m} m², ${n}`,
+    izhodisce:'Choose a starting point',
     nadstropja:'Floors', odstrani:'Remove', dodajNadstropje:'Add a floor', prostori:'Rooms',
     mereOpis:'Sizes are in metres. The position is the top-left corner of the room on the plan.',
     imeProstora:'Room name', vrstaProstora:'Room type', odstraniSobo:i => `Remove ${i}`,
@@ -419,9 +419,9 @@ const I18N = {
     namig:'Ziehen zum Drehen, Mausrad zum Zoomen, Klick auf einen Raum wählt ihn aus.',
     h1:'Smart-Home-Konfigurator', uvod:'Wählen Sie einen Grundriss und passen Sie Räume und Geräte an. Der Preis wird laufend berechnet.',
     zTloris:'1. Grundriss', zNaprave:'2. Geräte', zCena:'3. Preis', jezik:'Sprache',
-    shraniPovezavo:'Link speichern', povezavaKratko:'Link', ponudbaPdf:'Angebot als PDF', pdfKratko:'PDF',
+    shraniPovezavo:'Link speichern', povezavaKratko:'Link speichern', ponudbaPdf:'Angebot als PDF', pdfKratko:'Angebot PDF',
     brezDdv:'ohne MwSt.', zDdv22:'inkl. 22 % MwSt.',
-    izhodisce:'Ausgangspunkt wählen', priblizno:(m, n) => `ca. ${m} m², ${n}`,
+    izhodisce:'Ausgangspunkt wählen',
     nadstropja:'Etagen', odstrani:'Entfernen', dodajNadstropje:'Etage hinzufügen', prostori:'Räume',
     mereOpis:'Maße in Metern. Die Position gibt die linke obere Ecke des Raums im Grundriss an.',
     imeProstora:'Raumname', vrstaProstora:'Raumart', odstraniSobo:i => `${i} entfernen`,
@@ -485,9 +485,9 @@ const I18N = {
     namig:'Ťahaním otáčate, kolieskom približujete, kliknutím vyberiete miestnosť.',
     h1:'Konfigurátor inteligentnej domácnosti', uvod:'Vyberte pôdorys a upravte miestnosti a zariadenia. Cena sa prepočítava priebežne.',
     zTloris:'1. Pôdorys', zNaprave:'2. Zariadenia', zCena:'3. Cena', jezik:'Jazyk',
-    shraniPovezavo:'Uložiť odkaz', povezavaKratko:'Odkaz', ponudbaPdf:'Ponuka v PDF', pdfKratko:'PDF',
+    shraniPovezavo:'Uložiť odkaz', povezavaKratko:'Uložiť odkaz', ponudbaPdf:'Ponuka v PDF', pdfKratko:'Ponuka PDF',
     brezDdv:'bez DPH', zDdv22:'s DPH 22 %',
-    izhodisce:'Vyberte východisko', priblizno:(m, n) => `približne ${m} m², ${n}`,
+    izhodisce:'Vyberte východisko',
     nadstropja:'Podlažia', odstrani:'Odstrániť', dodajNadstropje:'Pridať poschodie', prostori:'Miestnosti',
     mereOpis:'Rozmery sú v metroch. Poloha určuje ľavý horný roh miestnosti na pôdoryse.',
     imeProstora:'Názov miestnosti', vrstaProstora:'Typ miestnosti', odstraniSobo:i => `Odstrániť ${i}`,
@@ -551,9 +551,9 @@ const I18N = {
     namig:'Povucite za okretanje, kotačićem povećajte, klikom odaberite prostoriju.',
     h1:'Konfigurator pametnog doma', uvod:'Odaberite tlocrt i prilagodite prostorije i uređaje. Cijena se računa odmah.',
     zTloris:'1. Tlocrt', zNaprave:'2. Uređaji', zCena:'3. Cijena', jezik:'Jezik',
-    shraniPovezavo:'Spremi poveznicu', povezavaKratko:'Poveznica', ponudbaPdf:'Ponuda u PDF-u', pdfKratko:'PDF',
+    shraniPovezavo:'Spremi poveznicu', povezavaKratko:'Spremi poveznicu', ponudbaPdf:'Ponuda u PDF-u', pdfKratko:'Ponuda PDF',
     brezDdv:'bez PDV-a', zDdv22:'s PDV-om 22 %',
-    izhodisce:'Odaberite polazište', priblizno:(m, n) => `oko ${m} m², ${n}`,
+    izhodisce:'Odaberite polazište',
     nadstropja:'Etaže', odstrani:'Ukloni', dodajNadstropje:'Dodaj kat', prostori:'Prostorije',
     mereOpis:'Mjere su u metrima. Položaj određuje gornji lijevi kut prostorije na tlocrtu.',
     imeProstora:'Naziv prostorije', vrstaProstora:'Vrsta prostorije', odstraniSobo:i => `Ukloni ${i}`,
@@ -715,13 +715,15 @@ function izracun(s) {
   const opremaSk = opremaR + material + nabava;
   const brez = opremaSk + delo + elektro;
   const ddv = Math.round(brez * DDV * 100) / 100;
-  return { kol, opremaR, material, nabava, opremaSk, ure, delo, moduli, elektro, brez, ddv, z:brez + ddv,
+  // material na zaslonu prevzame zaokrozitev opreme, da se postavke s centi sestejejo v »Oprema skupaj«
+  const materialPrik = Math.round((material + opremaR - oprema) * 100) / 100;
+  return { kol, opremaR, material, materialPrik, nabava, opremaSk, ure, delo, moduli, elektro, brez, ddv, z:brez + ddv,
     povrsina: s.sobe.filter(r => r.tip !== 'terasa').reduce((a, r) => a + r.w * r.d, 0) };
 }
 // valuta po pravilih jezika (»3.740 €«, »€3,740«); presledek pred € je navaden, kot doslej
 const evro = (n, dec) => new Intl.NumberFormat(I18N[jezik].loc, { style:'currency', currency:'EUR', minimumFractionDigits:dec, maximumFractionDigits:dec, useGrouping:'always' })
   .format(n).replace(/[  ]€/, ' €');
-const f0 = n => evro(n, 0);
+const f0 = n => evro(Math.round(n), 2);
 const f2 = n => evro(n, 2);
 const prostorov = n => t('prostorov', n);
 const m2 = n => new Intl.NumberFormat(I18N[jezik].loc, { maximumFractionDigits:1, useGrouping:'always' }).format(n);
@@ -1056,7 +1058,7 @@ function zavihekTloris() {
   return `<h2>${t('izhodisce')}</h2>
   <div class="predloge">${Object.entries(PREDLOGE).map(([k, p]) => {
     const pov = p.sobe.filter(s => s[0] !== 'terasa').reduce((a, s) => a + s[3] * s[4], 0);
-    return `<button data-predloga="${k}" aria-pressed="${st.predloga === k}"><b>${imePredloge(k)}</b><span>${t('priblizno', Math.round(pov), prostorov(p.sobe.length))}</span></button>`; }).join('')}</div>
+    return `<button data-predloga="${k}" aria-pressed="${st.predloga === k}"><b>${imePredloge(k)}</b><span>${Math.round(pov)} m²</span><span>${prostorov(p.sobe.length)}</span></button>`; }).join('')}</div>
   <h2>${t('nadstropja')}</h2>
   <div class="etazni">${[...Array(steviloEtaz()).keys()].map(e => `<div class="etazna"><span><b>${imeEtaze(e)}</b> ${prostorov(st.sobe.filter(r => r.e === e).length)}</span>${e > 0 && e === steviloEtaz() - 1 ? `<button class="brisi-etazo" data-brisi-etazo="${e}">${t('odstrani')}</button>` : ''}</div>`).join('')}</div>
   ${steviloEtaz() < MAX_ETAZ ? `<button class="dodaj" id="dodaj-etazo">${t('dodajNadstropje')}</button>` : ''}
@@ -1102,8 +1104,8 @@ function zavihekCena() {
   const iz = izracun(st);
   return `<p class="opis">${t('cenaOpis')}</p>
   <table class="cene">
-    ${vrsticeOpreme(iz).map(([i, n, c]) => `<tr><td>${esc(i)} <small>× ${n}</small></td><td class="n">${f0(n * c)}</td></tr>`).join('')}
-    <tr><td>${t('material')}</td><td class="n">${f0(iz.material)}</td></tr>
+    ${vrsticeOpreme(iz).map(([i, n, c]) => `<tr><td>${esc(i)} <small>× ${n}</small></td><td class="n">${f2(n * c)}</td></tr>`).join('')}
+    <tr><td>${t('material')}</td><td class="n">${f2(iz.materialPrik)}</td></tr>
     <tr><td>${t('nabava')} <small>${t('nabavaPct')}</small></td><td class="n">${f0(iz.nabava)}</td></tr>
     <tr class="vsota"><td>${t('opremaSkupaj')}</td><td class="n">${f0(iz.opremaSk)}</td></tr>
     <tr><td>${t('delo')} <small>${m2(iz.ure)} h × ${f0(URNA)}</small></td><td class="n">${f0(iz.delo)}</td></tr>
@@ -1245,8 +1247,8 @@ function sestaviPonudbo() {
   </tbody></table>
   <h2>${t('razdelitev')}</h2>
   <table><thead><tr><th>${t('postavka')}</th><th class="n">${t('kolicina')}</th><th class="n">${t('cena')}</th><th class="n">${t('znesek')}</th></tr></thead><tbody>
-    ${vrsticeOpreme(iz).map(([i, n, c]) => `<tr><td>${esc(i)}</td><td class="n">${n}</td><td class="n">${f2(c)}</td><td class="n">${f0(n * c)}</td></tr>`).join('')}
-    <tr><td>${t('material')}</td><td></td><td></td><td class="n">${f0(iz.material)}</td></tr>
+    ${vrsticeOpreme(iz).map(([i, n, c]) => `<tr><td>${esc(i)}</td><td class="n">${n}</td><td class="n">${f2(c)}</td><td class="n">${f2(n * c)}</td></tr>`).join('')}
+    <tr><td>${t('material')}</td><td></td><td></td><td class="n">${f2(iz.materialPrik)}</td></tr>
     <tr><td>${t('nabavaDolgo')}</td><td></td><td></td><td class="n">${f0(iz.nabava)}</td></tr>
     <tr class="vs"><td>${t('opremaSkupaj')}</td><td></td><td></td><td class="n">${f0(iz.opremaSk)}</td></tr>
     <tr><td>${t('deloDolgo')}</td><td class="n">${m2(iz.ure)} h</td><td class="n">${f2(URNA)}</td><td class="n">${f0(iz.delo)}</td></tr>
